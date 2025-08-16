@@ -11,12 +11,11 @@ WIN_B=0xf8d6e0586b0a20c7
 echo ">> Deploying contracts"
 flow deploy
 
-echo ">> Creating Org"
-flow transactions send ./cadence/transactions/tx_create_org.cdc "OmniPool Labs"
+echo ">> Creating Org (skipping - already exists)"
+# flow transactions send ./cadence/transactions/tx_create_org.cdc "OmniPool Labs"
 
 echo ">> Creating Vault"
-flow transactions send ./cadence/transactions/tx_create_vault.cdc $ORG \
-"{\"name\":\"ETHGlobal NY Bounties\",\"kind\":0,\"description\":\"Top bounties paid via Flow Actions.\",\"bannerCID\":\"ipfs://bafy-demo-banner\",\"logoCID\":\"ipfs://bafy-demo-logo\",\"externalURL\":\"https://demo.omnipool.app\",\"rails\":{\"acceptedIn\":[\"usdc:flow\"],\"payoutOut\":[\"usdc:flow\"]},\"kyc\":{\"thresholdUsd\":1000.0},\"strategyHint\":\"idle\"}"
+flow transactions send ./cadence/transactions/tx_create_vault.cdc --args-json '[{"type": "Address", "value": "0xf8d6e0586b0a20c7"}, {"type": "String", "value": "ETHGlobal NY Bounties"}, {"type": "UInt8", "value": "0"}, {"type": "String", "value": "Top bounties paid via Flow Actions."}, {"type": "Optional", "value": null}, {"type": "Optional", "value": null}, {"type": "Optional", "value": null}, {"type": "Array", "value": [{"type": "String", "value": "usdc:flow"}]}, {"type": "Array", "value": [{"type": "String", "value": "usdc:flow"}]}, {"type": "Optional", "value": null}, {"type": "Optional", "value": null}]'
 
 echo ">> Linking USDC receiver for org (serves as winner for demo)"
 flow transactions send ./cadence/transactions/tx_link_usdc_receiver.cdc
@@ -29,9 +28,20 @@ echo ">> Seeding USDC to Org"
 flow transactions send ./cadence/transactions/tx_mint_or_fund_usdc.cdc $ORG "5000.00"
 
 echo ">> Setting winners & planning payout"
-flow transactions send ./cadence/transactions/tx_set_winners.cdc $ORG $VAULT_ID \
-"[{\"participantId\":1,\"amount\":3000.00,\"chainHint\":\"flow\",\"tokenHint\":\"USDC\"},{\"participantId\":2,\"amount\":2000.00,\"chainHint\":\"flow\",\"tokenHint\":\"USDC\"}]"
+flow transactions send ./cadence/transactions/tx_set_winners_simple.cdc $ORG $VAULT_ID 3 3000.00 4 2000.00
 flow transactions send ./cadence/transactions/tx_plan_payout.cdc $ORG $VAULT_ID
 
 echo ">> Summary"
+flow scripts execute ./cadence/scripts/sc_get_summary.cdc $ORG $VAULT_ID
+
+echo ">> Executing payout with Flow Actions"
+flow transactions send ./cadence/transactions/tx_payout_split.cdc $ORG $VAULT_ID
+
+echo ">> Checking winner balances after payout"
+echo "Winner A balance:"
+flow scripts execute ./cadence/scripts/sc_get_winner_balance.cdc $WIN_A
+echo "Winner B balance:"
+flow scripts execute ./cadence/scripts/sc_get_winner_balance.cdc $WIN_B
+
+echo ">> Final summary"
 flow scripts execute ./cadence/scripts/sc_get_summary.cdc $ORG $VAULT_ID
