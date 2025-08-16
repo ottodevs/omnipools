@@ -1,4 +1,4 @@
-import FungibleToken from "FungibleTokenMock"
+import FungibleToken from "FungibleToken"
 // import FiatToken from "../contracts/FiatTokenMock.cdc"
 import Vaults from "Vaults"
 

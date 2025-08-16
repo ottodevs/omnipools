@@ -1,4 +1,4 @@
-import Registry from "./Registry.cdc"
+import Registry from "Registry"
 
 access(all) contract Vaults {
     
