@@ -1,0 +1,126 @@
+{
+  // linting and formatting - ANTFU ESLINT CONFIG
+  "eslint.validate": [
+    "javascript",
+    "javascriptreact",
+    "typescript",
+    "typescriptreact",
+    "html",
+    "markdown",
+    "json",
+    "jsonc",
+    "yaml",
+    "toml",
+    "css"
+  ],
+
+  // DISABLE PRETTIER - Antfu handles formatting
+  "prettier.enable": false,
+  "editor.defaultFormatter": null,
+  "editor.formatOnSave": false,
+
+  // Auto fix with ESLint (replaces Prettier)
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": "explicit",
+    "source.organizeImports": "never"
+  },
+
+  // Disable stylistic rules in IDE but keep auto-fix
+  "eslint.rules.customizations": [
+    { "rule": "style/*", "severity": "off", "fixable": true },
+    { "rule": "format/*", "severity": "off", "fixable": true },
+    { "rule": "*-indent", "severity": "off", "fixable": true },
+    { "rule": "*-spacing", "severity": "off", "fixable": true },
+    { "rule": "*-spaces", "severity": "off", "fixable": true },
+    { "rule": "*-order", "severity": "off", "fixable": true },
+    { "rule": "*-dangle", "severity": "off", "fixable": true },
+    { "rule": "*-newline", "severity": "off", "fixable": true },
+    { "rule": "*quotes", "severity": "off", "fixable": true },
+    { "rule": "*semi", "severity": "off", "fixable": true },
+    { "rule": "better-tailwindcss/*", "severity": "off", "fixable": true }
+  ],
+  // improves tailwind suggestions https://stackoverflow.com/a/68350950/2976642
+  "editor.quickSuggestions": { "strings": true },
+
+  // emmet
+  "emmet.syntaxProfiles": {
+    "jsx": { "attr_quotes": "single", "attr_name": "className" }
+  },
+  "emmet.includeLanguages": { "typescriptreact": "jsx" },
+
+  // files
+  "files.associations": {
+    "*.css": "tailwindcss",
+    ".env.*.local": "env",
+    ".env.local": "env",
+    ".npmrc": "ini"
+  },
+  "[env]": {
+    "editor.defaultFormatter": "IronGeek.vscode-env"
+  },
+
+  // github copilot
+  "github.copilot.enable": {
+    "env": false
+  },
+
+  // supermaven
+  "supermaven.enable": {
+    ".env*": false
+  },
+
+  // cody
+  "cody.autocomplete.languages": {
+    ".env*": false
+  },
+
+  // cursor
+  "cursor.cpp.disabledLanguages": ["env"],
+
+  // tailwindcss
+  "tailwindCSS.emmetCompletions": true,
+  "tailwindCSS.experimental.classRegex": [
+    // https://cva.style/docs/getting-started/installation#tailwind-css
+    ["cva\\(([^)]*)\\)", "[\"'`]([^\"'`]*).*?[\"'`]"],
+    ["cx\\(([^)]*)\\)", "(?:'|\"|`)([^']*)(?:'|\"|`)"]
+  ],
+  "css.lint.validProperties": ["field-sizing"],
+
+  // typescript
+  "typescript.tsdk": "./node_modules/typescript/lib",
+
+  // solidity
+  "svg.preview.disable": false,
+  "[svg]": {
+    "editor.defaultFormatter": "jock.svg"
+  },
+  "[typescript]": {
+    "editor.defaultFormatter": "vscode.typescript-language-features"
+  },
+  "[json]": {
+    "editor.defaultFormatter": "vscode.json-language-features"
+  },
+  "[typescriptreact]": {
+    "editor.defaultFormatter": "vscode.typescript-language-features"
+  },
+
+  // iconify
+  "iconify.inplace": false,
+
+  "solidity.packageDefaultDependenciesContractsDirectory": "contracts/src",
+  "solidity.packageDefaultDependenciesDirectory": "contracts/dependencies",
+  "[solidity]": {
+    "editor.defaultFormatter": "JuanBlanco.solidity",
+    "editor.formatOnSave": true
+  },
+  "solidity.formatter": "forge",
+  "solidity.compileUsingRemoteVersion": "v0.8.30",
+
+  // cadence
+  "cadence.flowCommand": "flow",
+  "cadence.accessCheckMode": "strict",
+  "[cadence]": {
+    "editor.defaultFormatter": "onflow.cadence",
+    "editor.formatOnSave": true
+  }
+}
