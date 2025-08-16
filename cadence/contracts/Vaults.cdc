@@ -43,6 +43,16 @@ access(all) contract Vaults {
             self.addedAt = getCurrentBlock().timestamp
         }
     }
+
+    access(all) struct FlowUSDCWinner {
+        access(all) let addr: Address
+        access(all) let amount: UFix64
+        
+        init(addr: Address, amount: UFix64) {
+            self.addr = addr
+            self.amount = amount
+        }
+    }
     
     access(all) struct WinnerShare {
         access(all) let participantId: UInt64
@@ -122,15 +132,11 @@ access(all) contract Vaults {
         }
     }
     
-    // Vault Resource
+    // Vault resource with embedded metadata
     access(all) resource Vault: IVaultPublic {
-        // Identity
         access(all) let id: UInt64
         access(all) let org: Address
         access(all) let kind: VaultKind
-        access(all) let createdAt: UFix64
-        
-        // Metadata (all on-chain)
         access(all) var name: String
         access(all) var description: String
         access(all) var bannerCID: String?
@@ -139,9 +145,8 @@ access(all) contract Vaults {
         access(all) let rails: Rails
         access(all) let kyc: KYC?
         access(all) var strategyHint: String?
-        
-        // State
-        access(all) var status: String // Draft|Live|PayoutPlanned|Paid
+        access(all) let createdAt: UFix64
+        access(all) var status: String
         access(all) var participants: {UInt64: Participant}
         access(all) var winners: [WinnerShare]
         access(all) var fundingNotes: [{String: String}]
@@ -149,15 +154,11 @@ access(all) contract Vaults {
         access(all) var operators: {Address: Bool}
         access(all) var nextParticipantId: UInt64
         access(all) var nextOperationId: UInt64
-        access(all) var tranches: [Tranche]
         
-        init(id: UInt64, org: Address, vaultInit: VaultInit) {
+        init(vaultInit: VaultInit, org: Address, id: UInt64) {
             self.id = id
             self.org = org
             self.kind = vaultInit.kind
-            self.createdAt = getCurrentBlock().timestamp
-            
-            // Metadata
             self.name = vaultInit.name
             self.description = vaultInit.description
             self.bannerCID = vaultInit.bannerCID
@@ -166,9 +167,8 @@ access(all) contract Vaults {
             self.rails = vaultInit.rails
             self.kyc = vaultInit.kyc
             self.strategyHint = vaultInit.strategyHint
-            
-            // State
-            self.status = "Draft"
+            self.createdAt = getCurrentBlock().timestamp
+            self.status = "Active"
             self.participants = {}
             self.winners = []
             self.fundingNotes = []
@@ -176,7 +176,159 @@ access(all) contract Vaults {
             self.operators = {}
             self.nextParticipantId = 1
             self.nextOperationId = 1
-            self.tranches = []
+        }
+        
+        // Metadata Views Implementation - Commented out for linting
+        // TODO: Re-enable when MetadataViews is properly deployed
+        /*
+        access(all) view fun getViews(): [Type] {
+            return [
+                Type<MetadataViews.Display>(),
+                Type<MetadataViews.ExternalURL>(),
+                Type<MetadataViews.NFTCollectionData>(),
+                Type<MetadataViews.NFTCollectionDisplay>(),
+                Type<MetadataViews.Traits>()
+            ]
+        }
+        
+        access(all) fun resolveView(_ view: Type): AnyStruct? {
+            switch view {
+                case Type<MetadataViews.Display>():
+                    return MetadataViews.Display(
+                        name: self.name,
+                        description: self.description,
+                        thumbnail: MetadataViews.HTTPFile(
+                            url: self.logoCID ?? "https://omnipools.app/default-logo.png"
+                        )
+                    )
+                    
+                case Type<MetadataViews.ExternalURL>():
+                    if let url = self.externalURL {
+                        return MetadataViews.ExternalURL(url)
+                    }
+                    return nil
+                    
+                case Type<MetadataViews.Traits>():
+                    let traits = MetadataViews.Traits([])
+                    
+                    // Add vault traits
+                    traits.addTrait(MetadataViews.Trait(
+                        name: "Vault ID",
+                        value: self.id,
+                        displayType: "Number",
+                        rarity: nil
+                    ))
+                    
+                    traits.addTrait(MetadataViews.Trait(
+                        name: "Organization",
+                        value: self.org,
+                        displayType: "Address",
+                        rarity: nil
+                    ))
+                    
+                    traits.addTrait(MetadataViews.Trait(
+                        name: "Kind",
+                        value: self.kind.rawValue,
+                        displayType: "Number",
+                        rarity: nil
+                    ))
+                    
+                    traits.addTrait(MetadataViews.Trait(
+                        name: "Status",
+                        value: self.status,
+                        displayType: "String",
+                        rarity: nil
+                    ))
+                    
+                    traits.addTrait(MetadataViews.Trait(
+                        name: "Created At",
+                        value: self.createdAt,
+                        displayType: "Date",
+                        rarity: nil
+                    ))
+                    
+                    traits.addTrait(MetadataViews.Trait(
+                        name: "Participant Count",
+                        value: self.participants.length,
+                        displayType: "Number",
+                        rarity: nil
+                    ))
+                    
+                    traits.addTrait(MetadataViews.Trait(
+                        name: "Winner Count",
+                        value: self.winners.length,
+                        displayType: "Number",
+                        rarity: nil
+                    ))
+                    
+                    traits.addTrait(MetadataViews.Trait(
+                        name: "Total Winners Amount",
+                        value: self.getTotalWinnersAmount(),
+                        displayType: "Number",
+                        rarity: nil
+                    ))
+                    
+                    // Add rails information
+                    traits.addTrait(MetadataViews.Trait(
+                        name: "Accepted Tokens",
+                        value: self.rails.acceptedIn,
+                        displayType: "Array",
+                        rarity: nil
+                    ))
+                    
+                    traits.addTrait(MetadataViews.Trait(
+                        name: "Payout Tokens",
+                        value: self.rails.payoutOut,
+                        displayType: "Array",
+                        rarity: nil
+                    ))
+                    
+                    return traits
+                    
+                default:
+                    return nil
+            }
+        }
+        */
+        
+        // Helper function to get total winners amount
+        access(all) fun getTotalWinnersAmount(): UFix64 {
+            var total: UFix64 = 0.0
+            for winner in self.winners {
+                total = total + winner.amount
+            }
+            return total
+        }
+        
+        // Metadata update functions
+        access(all) fun updateName(name: String) {
+            if !self.isAuthorized() { panic("Not authorized") }
+            self.name = name
+        }
+        
+        access(all) fun updateDescription(description: String) {
+            if !self.isAuthorized() { panic("Not authorized") }
+            self.description = description
+        }
+        
+        access(all) fun updateLogoCID(logoCID: String?) {
+            if !self.isAuthorized() { panic("Not authorized") }
+            self.logoCID = logoCID
+        }
+        
+        access(all) fun updateBannerCID(bannerCID: String?) {
+            if !self.isAuthorized() { panic("Not authorized") }
+            self.bannerCID = bannerCID
+        }
+        
+        access(all) fun updateExternalURL(externalURL: String?) {
+            if !self.isAuthorized() { panic("Not authorized") }
+            self.externalURL = externalURL
+        }
+        
+        access(all) fun updateStrategyHint(strategyHint: String?) {
+            if !self.isAuthorized() { panic("Not authorized") }
+            self.strategyHint = strategyHint
         }
         
         // Owner-only functions
@@ -253,6 +405,35 @@ access(all) contract Vaults {
             
             let totalAmount = self.calculateTotalWinnerAmount()
             emit PayoutExecuted(vaultId: self.id, operationId: opId, totalPaid: totalAmount)
+        }
+
+        access(all) fun markPaidWithDetails(opId: UInt64, totalPaid: UFix64, misses: {Address: UFix64}) {
+            // Check authorization
+            if !self.isAuthorized() {
+                panic("Not authorized")
+            }
+            if self.status != "PayoutPlanned" {
+                panic("Payout not planned")
+            }
+            self.status = "Paid"
+            emit PayoutExecuted(vaultId: self.id, operationId: opId, totalPaid: totalPaid)
+        }
+
+
+
+        access(all) fun getFlowUSDCWinners(): [FlowUSDCWinner] {
+            var result: [FlowUSDCWinner] = []
+            
+            for winner in self.winners {
+                if winner.chainHint == "flow" && winner.tokenHint == "USDC" {
+                    // Find the participant address
+                    if let participant = self.participants[winner.participantId] {
+                        result.append(FlowUSDCWinner(addr: participant.addr, amount: winner.amount))
+                    }
+                }
+            }
+            
+            return result
         }
         
         access(all) fun addReceipt(receipt: {String: String}) {
@@ -408,7 +589,7 @@ access(all) contract Vaults {
             let vaultId = Vaults.nextVaultId
             Vaults.nextVaultId = Vaults.nextVaultId + 1
             
-            let vault <- create Vault(id: vaultId, org: self.org, vaultInit: vaultInit)
+            let vault <- create Vault(vaultInit: vaultInit, org: self.org, id: vaultId)
             
             // Store vault
             let oldVault <- self.vaults[vaultId] <- vault
