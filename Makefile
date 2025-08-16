@@ -1,35 +1,33 @@
 # OmniPools Development Makefile
-# Quick commands for hackathon development
+# Simplified commands for modern Flow development
 
-.PHONY: help install dev test flow-emulator flow-test flow-deploy clean
+.PHONY: help install dev test test-coverage lint clean setup reset
 
 # Default target
 help:
 	@echo "🚀 OmniPools Development Commands:"
 	@echo ""
 	@echo "📦 Quick Start:"
-	@echo "  make hackathon   - Complete setup (emulator + contracts)"
-	@echo "  make dev         - Start frontend"
-	@echo ""
-	@echo "🔄 Development:"
-	@echo "  make install     - Install dependencies"
-	@echo "  make flow        - Start Flow emulator (background)"
-	@echo "  make setup       - Setup emulator + deploy contracts"
+	@echo "  make setup      - Complete setup (emulator + contracts)"
+	@echo "  make dev        - Start frontend"
 	@echo ""
 	@echo "🧪 Testing:"
-	@echo "  make test        - Run all tests (our implementation)"
-	@echo "  make test-flow   - Run Flow native tests (official)"
-	@echo "  make test-all    - Run both approaches + linting"
-	@echo "  make lint        - Lint Cadence contracts"
+	@echo "  make test       - Run Flow tests with coverage"
+	@echo "  make test-coverage - Run tests with detailed coverage report"
+	@echo "  make lint       - Lint Cadence contracts"
 	@echo ""
-	@echo "📋 Status & Debug:"
-	@echo "  make status      - Check emulator and contract status"
-	@echo "  make logs        - Show emulator logs"
-	@echo "  make flow-stop   - Stop Flow emulator"
+	@echo "🔄 Development:"
+	@echo "  make install    - Install dependencies"
+	@echo "  make flow       - Start Flow emulator"
+	@echo "  make flow-stop  - Stop Flow emulator"
+	@echo ""
+	@echo "📋 Status:"
+	@echo "  make status     - Check emulator and contract status"
+	@echo "  make logs       - Show emulator logs"
 	@echo ""
 	@echo "🧹 Cleanup:"
-	@echo "  make clean       - Clean build artifacts"
-	@echo "  make reset       - Reset emulator state and redeploy contracts"
+	@echo "  make clean      - Clean build artifacts"
+	@echo "  make reset      - Reset emulator and redeploy"
 
 # Install dependencies
 install:
@@ -49,7 +47,7 @@ dev:
 	@echo "🚀 Starting Next.js dev server..."
 	bun run dev
 
-# Start Flow emulator (runs in foreground)
+# Start Flow emulator
 flow:
 	@./scripts/start-emulator.sh
 
@@ -57,66 +55,24 @@ flow:
 flow-stop:
 	@./scripts/stop-emulator.sh
 
-# Run all tests
-test: test-simple test-e2e test-vault test-comprehensive
-	@echo "✅ All tests completed"
+# Run Flow tests with coverage
+test:
+	@echo "🧪 Running Flow tests with coverage..."
+	@flow test --cover
+	@echo "✅ Tests completed"
 
-# Run simple contract tests
-test-simple:
-	@echo "🧪 Running simple contract tests..."
-	@if ! nc -z localhost 3569 2>/dev/null; then \
-		echo "⚠️  Emulator not running, starting it..."; \
-		make flow; \
-	fi
-	@flow scripts execute cadence/scripts/sc_test_simple.cdc
-	@flow scripts execute cadence/scripts/sc_test_contracts.cdc
+# Run tests with detailed coverage report
+test-coverage:
+	@echo "🧪 Running Flow tests with detailed coverage..."
+	@flow test --cover --coverprofile=coverage.json
+	@echo "📊 Coverage report saved to coverage.json"
+	@echo "✅ Tests completed"
 
-# Run end-to-end tests
-test-e2e:
-	@echo "🧪 Running end-to-end tests..."
-	@if ! nc -z localhost 3569 2>/dev/null; then \
-		echo "⚠️  Emulator not running, starting it..."; \
-		make flow; \
-	fi
-	@flow scripts execute cadence/scripts/sc_test_end_to_end_simple.cdc
-
-# Test vault operations
-test-vault:
-	@echo "🧪 Testing vault operations..."
-	@if ! nc -z localhost 3569 2>/dev/null; then \
-		echo "⚠️  Emulator not running, starting it..."; \
-		make flow; \
-	fi
-	@flow scripts execute cadence/scripts/sc_test_vault_creation.cdc
-	@flow scripts execute cadence/scripts/sc_test_vault_operations.cdc
-
-# Run comprehensive tests
-test-comprehensive:
-	@echo "🧪 Running comprehensive tests..."
-	@if ! nc -z localhost 3569 2>/dev/null; then \
-		echo "⚠️  Emulator not running, starting it..."; \
-		make flow; \
-	fi
-	@flow scripts execute cadence/scripts/sc_test_comprehensive.cdc
-
-# Lint Cadence code
+# Lint Cadence contracts
 lint:
 	@echo "🔍 Linting Cadence contracts..."
-	@flow cadence lint cadence/contracts/FungibleTokenMock.cdc
-	@flow cadence lint cadence/contracts/Registry.cdc  
-	@flow cadence lint cadence/contracts/Vaults.cdc
+	@flow cadence lint cadence/contracts/*.cdc
 	@echo "✅ Contract linting passed"
-	@echo "💡 Note: Scripts require deployed contracts for proper linting"
-
-# Run Flow native tests (experimental)
-test-flow:
-	@echo "🧪 Running Flow native tests..."
-	@echo "💡 Note: This uses the official flow test framework"
-	@flow test --cover || echo "⚠️  Flow native tests may require additional configuration"
-
-# Run all test approaches
-test-all: test test-flow lint
-	@echo "🎉 All testing approaches completed!"
 
 # Check emulator and contract status
 status:
@@ -143,6 +99,7 @@ clean:
 	@echo "🧹 Cleaning build artifacts..."
 	rm -rf .next
 	rm -rf node_modules/.cache
+	rm -f coverage.json
 	@echo "✅ Clean complete"
 
 # Reset emulator and redeploy
@@ -154,13 +111,4 @@ reset:
 	@./scripts/start-emulator.sh
 	@echo "📄 Deploying contracts..."
 	@flow deploy
-	@echo "✅ Reset complete! Fresh emulator state with contracts deployed"
-
-# Quick hackathon setup (everything in one command)
-hackathon: setup
-	@echo "🎉 Hackathon setup complete!"
-	@echo "📱 Next.js: http://localhost:3000"
-	@echo "🔧 Flow Emulator: http://localhost:3569"
-	@echo ""
-	@echo "🚀 Now run 'make dev' to start the frontend"
-	@echo "📚 Documentation: ./docs/" 
+	@echo "✅ Reset complete! Fresh emulator state with contracts deployed" 
