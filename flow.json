@@ -1,0 +1,49 @@
+{
+	"contracts": {
+		"FungibleTokenMock": "cadence/contracts/FungibleTokenMock.cdc",
+		"Registry": "cadence/contracts/Registry.cdc",
+		"Vaults": "cadence/contracts/Vaults.cdc"
+	},
+	"networks": {
+		"emulator": "127.0.0.1:3569",
+		"testing": "127.0.0.1:3569"
+	},
+	"accounts": {
+		"emulator-account": {
+			"address": "f8d6e0586b0a20c7",
+			"key": {
+				"type": "hex",
+				"index": 0,
+				"signatureAlgorithm": "ECDSA_P256",
+				"hashAlgorithm": "SHA3_256",
+				"privateKey": "092016cb1c82d25a894bcae8782aa8c89eb108c2abc4a200a12ab9a97bab3871"
+			}
+		},
+		"testing-account": {
+			"address": "f8d6e0586b0a20c7",
+			"key": {
+				"type": "hex",
+				"index": 0,
+				"signatureAlgorithm": "ECDSA_P256",
+				"hashAlgorithm": "SHA3_256",
+				"privateKey": "092016cb1c82d25a894bcae8782aa8c89eb108c2abc4a200a12ab9a97bab3871"
+			}
+		}
+	},
+	"deployments": {
+		"emulator": {
+			"emulator-account": [
+				"FungibleTokenMock",
+				"Registry",
+				"Vaults"
+			]
+		},
+		"testing": {
+			"testing-account": [
+				"FungibleTokenMock",
+				"Registry",
+				"Vaults"
+			]
+		}
+	}
+}
