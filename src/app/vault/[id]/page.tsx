@@ -18,10 +18,13 @@ export default function VaultPage() {
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
 
+  const [showMisses, setShowMisses] = useState(false);
+
   const refresh = () => {
     setError(null);
     setLoading(true);
-    fetch(`/data/vault-${id}.json?ts=${Date.now()}`)
+    const dataFile = showMisses ? `vault-${id}-misses.json` : `vault-${id}.json`;
+    fetch(`/data/${dataFile}?ts=${Date.now()}`)
       .then(r => { 
         if (!r.ok) throw new Error(String(r.status)); 
         return r.json(); 
@@ -33,7 +36,7 @@ export default function VaultPage() {
 
   useEffect(() => {
     refresh();
-  }, [id]);
+  }, [id, showMisses]);
 
   // Show skeleton for 300-500ms to avoid "stuck loading" when live-demoing
   if (loading) {
@@ -109,6 +112,12 @@ export default function VaultPage() {
               className="rounded-xl bg-white/10 px-4 py-2 hover:bg-white/20 text-white"
             >
               Refresh data
+            </button>
+            <button 
+              onClick={() => setShowMisses(!showMisses)} 
+              className="rounded-xl bg-orange-500/20 px-4 py-2 hover:bg-orange-500/30 text-orange-200"
+            >
+              {showMisses ? 'Show Normal' : 'Show Misses'}
             </button>
           </div>
         </div>

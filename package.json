@@ -35,7 +35,8 @@
     "unused": "knip",
     "docs": "echo '📚 Documentation available in ./docs/'",
     "snapshot-ui": "./scripts/refresh-ui.sh",
-    "judge": "concurrently -k -n EMU,APP -c cyan,magenta \"flow emulator start --verbose\" \"sh -c 'sleep 3 && ./scripts/demo.sh && bun run snapshot-ui && bun run dev'\""
+    "judge": "concurrently -k -n EMU,APP -c cyan,magenta \"flow emulator start --verbose\" \"sh -c 'sleep 3 && ./scripts/demo.sh && bun run snapshot-ui && bun run dev'\"",
+    "reset-run": "./scripts/reset-and-run.sh"
   },
   "dependencies": {
     "@onflow/react-sdk": "0.10.1",

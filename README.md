@@ -35,7 +35,8 @@ make test-all
 ## 📋 Prerequisites
 
 - [Bun](https://bun.sh/) - Package manager
-- [Flow CLI](https://developers.flow.com/tools/flow-cli) - Flow blockchain tools
+- [Node.js](https://nodejs.org/) v22.17.0 (see .nvmrc)
+- [Flow CLI](https://developers.flow.com/tools/flow-cli) v1.16.x - Flow blockchain tools
 
 ## 📚 Documentation
 
@@ -77,6 +78,9 @@ bun run judge
 # Or step by step:
 bun run dev          # Start UI
 bun run snapshot-ui  # Refresh data from CLI results
+
+# If emulator already running:
+./scripts/demo.sh && bun run snapshot-ui && bun run dev
 ```
 
 - **Home**: `/` - Shows banner and link to vault
