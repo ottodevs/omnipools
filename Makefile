@@ -68,11 +68,12 @@ test-coverage:
 	@echo "📊 Coverage report saved to coverage.json"
 	@echo "✅ Tests completed"
 
-# Lint Cadence contracts
+# Lint all Cadence files (requires contracts to be deployed)
 lint:
-	@echo "🔍 Linting Cadence contracts..."
-	@flow cadence lint cadence/contracts/*.cdc
-	@echo "✅ Contract linting passed"
+	@echo "🔍 Linting all Cadence files..."
+	@echo "📋 Note: Contracts must be deployed for proper import resolution"
+	@find cadence -name "*.cdc" -exec flow cadence lint {} \;
+	@echo "✅ All Cadence files linting passed"
 
 # Check emulator and contract status
 status:
