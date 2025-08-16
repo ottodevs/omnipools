@@ -6,7 +6,17 @@
     "dev": "next dev --turbopack",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "flow:emulator": "flow emulator start --persist",
+    "flow:deploy": "flow deploy",
+    "flow:test": "flow scripts execute cadence/scripts/sc_test_simple.cdc",
+    "flow:test:e2e": "flow scripts execute cadence/scripts/sc_test_end_to_end_simple.cdc",
+    "flow:test:vault": "flow scripts execute cadence/scripts/sc_test_vault_operations.cdc",
+    "flow:test:comprehensive": "flow scripts execute cadence/scripts/sc_test_comprehensive.cdc",
+    "setup": "make setup",
+    "test": "make test",
+    "hackathon": "make hackathon",
+    "docs": "echo '📚 Documentation available in ./docs/'"
   },
   "dependencies": {
     "@onflow/react-sdk": "^0.10.1",
