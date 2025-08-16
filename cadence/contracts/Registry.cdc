@@ -125,17 +125,17 @@ access(all) contract Registry {
     // Helper function to setup an org account
     access(all) fun setupOrgAccount(account: auth(Storage, Capabilities) &Account, name: String, logoCID: String?) {
         // Check if already setup
-        if account.storage.borrow<&Org>(from: self.OrgCollectionStoragePath) != nil {
+        if account.storage.borrow<&OrgCollection>(from: self.OrgCollectionStoragePath) != nil {
             panic("Org already exists for this account")
         }
         
-        // Create and store org
-        let org <- self.createOrg(name: name, logoCID: logoCID)
-        account.storage.save(<-org, to: self.OrgCollectionStoragePath)
+        // Create and store org collection
+        let orgCollection <- create OrgCollection()
+        account.storage.save(<-orgCollection, to: self.OrgCollectionStoragePath)
         
         // Link public capability
         account.capabilities.publish(
-            account.capabilities.storage.issue<&Org>(self.OrgCollectionStoragePath),
+            account.capabilities.storage.issue<&OrgCollection>(self.OrgCollectionStoragePath),
             at: self.OrgCollectionPublicPath
         )
         

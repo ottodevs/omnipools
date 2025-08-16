@@ -36,11 +36,19 @@ access(all) contract MockUSDC {
             self.balance = balance
         }
         
-        // withdraws tokens from the vault
+        // Provider interface implementation
+        access(all) fun availableBalance(): UFix64 {
+            return self.balance
+        }
+        
         access(all) fun withdraw(amount: UFix64): @{FungibleToken.Vault} {
             self.balance = self.balance - amount
             emit TokensWithdrawn(amount: amount, from: self.owner?.address)
             return <-create Vault(balance: amount)
+        }
+        
+        access(all) fun destroyEmpty() {
+            // Cannot destroy self in this context, just leave empty
         }
         
         // deposits tokens into the vault
@@ -66,6 +74,11 @@ access(all) contract MockUSDC {
     // creates a new empty vault
     access(all) fun createEmptyVault(): @MockUSDC.Vault {
         return <-create Vault(balance: 0.0)
+    }
+    
+    // creates a new minter
+    access(all) fun createMinter(): @Minter {
+        return <-create Minter()
     }
     
     // gets the total supply
