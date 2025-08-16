@@ -1,0 +1,5 @@
+Demo Results Summary
+PayoutExecuted Event: operationId=2, totalPaid=5000.00000000
+Vault Status: Paid
+Last Operation ID: 2
+Total Winners Paid: 5000.00000000 USDC

@@ -24,11 +24,14 @@ echo ">> Adding participants"
 flow transactions send ./cadence/transactions/tx_add_participant.cdc $ORG $VAULT_ID $WIN_A "{\"team\":\"TeamAlpha\"}"
 flow transactions send ./cadence/transactions/tx_add_participant.cdc $ORG $VAULT_ID $WIN_B "{\"team\":\"TeamBeta\"}"
 
+echo ">> Setting up USDC minter"
+flow transactions send ./cadence/transactions/tx_setup_minter.cdc
+
 echo ">> Seeding USDC to Org"
 flow transactions send ./cadence/transactions/tx_mint_or_fund_usdc.cdc $ORG "5000.00"
 
 echo ">> Setting winners & planning payout"
-flow transactions send ./cadence/transactions/tx_set_winners_simple.cdc $ORG $VAULT_ID 3 3000.00 4 2000.00
+flow transactions send ./cadence/transactions/tx_set_winners_simple.cdc $ORG $VAULT_ID 1 3000.00 2 2000.00
 flow transactions send ./cadence/transactions/tx_plan_payout.cdc $ORG $VAULT_ID
 
 echo ">> Summary"
@@ -37,11 +40,9 @@ flow scripts execute ./cadence/scripts/sc_get_summary.cdc $ORG $VAULT_ID
 echo ">> Executing payout with Flow Actions"
 flow transactions send ./cadence/transactions/tx_payout_split.cdc $ORG $VAULT_ID
 
-echo ">> Checking winner balances after payout"
-echo "Winner A balance:"
-flow scripts execute ./cadence/scripts/sc_get_winner_balance.cdc $WIN_A
-echo "Winner B balance:"
-flow scripts execute ./cadence/scripts/sc_get_winner_balance.cdc $WIN_B
+echo ">> Winner balances (after)"
+flow scripts execute ./cadence/scripts/sc_get_winner_balance.cdc $WIN_A > .cache/bal_after_A.json
+flow scripts execute ./cadence/scripts/sc_get_winner_balance.cdc $WIN_B > .cache/bal_after_B.json
 
-echo ">> Final summary"
-flow scripts execute ./cadence/scripts/sc_get_summary.cdc $ORG $VAULT_ID
+echo ">> Summary after payout"
+flow scripts execute ./cadence/scripts/sc_get_summary.cdc $ORG $VAULT_ID > .cache/summary_after.json

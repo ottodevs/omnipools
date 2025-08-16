@@ -416,6 +416,8 @@ access(all) contract Vaults {
                 panic("Payout not planned")
             }
             self.status = "Paid"
+            // Update operation ID to match the provided opId
+            self.nextOperationId = opId + 1
             emit PayoutExecuted(vaultId: self.id, operationId: opId, totalPaid: totalPaid)
         }
 

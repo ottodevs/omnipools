@@ -2,15 +2,20 @@
 
 A comprehensive vault management system for bounties, grants, and tournaments built on Flow blockchain.
 
-## 🚀 Quick Start
+## 🚀 60-Second Judge Run
 
 ```bash
-# One command setup
-make hackathon
-
-# Start frontend
-make dev
+# Start emulator and run demo
+flow emulator start --verbose
+./scripts/demo.sh
 ```
+
+The demo will:
+1. Deploy contracts
+2. Create vault with participants
+3. Set winners and plan payout
+4. Execute payout via Flow Actions
+5. Show final balances and summary
 
 ## 🧪 Testing
 
@@ -60,6 +65,11 @@ flow scripts execute ./cadence/scripts/sc_get_winner_balance.cdc 0xf8d6e0586b0a2
 # Execute payout manually
 flow transactions send ./cadence/transactions/tx_payout_split.cdc 0xf8d6e0586b0a20c7 1
 ```
+
+## 📊 Demo Results
+
+- **[Demo Results](assets/demo_results.txt)** - Key metrics and operation IDs
+- **[Summary After Payout](assets/summary_after.txt)** - Complete vault state after payout
 
 ## 🔗 Links
 
