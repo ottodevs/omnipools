@@ -13,7 +13,7 @@ function Providers({ children }: { children: React.ReactNode }) {
         appDetailIcon: "https://example.com/icon.png",
         appDetailDescription: "A decentralized app on Flow",
         appDetailUrl: "https://myonchainapp.com",
-      }}
+          }}
           flowJson={flowJSON}
           colorMode="system"
     >
