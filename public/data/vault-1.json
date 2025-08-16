@@ -4,11 +4,11 @@
   "name": "ETHGlobal NY Bounties",
   "description": "Top bounties paid via Flow Actions.",
   "status": "Paid",
-  "lastOperationId": 2,
+  "lastOperationId": 1,
   "totalPaid": "5000.00",
   "misses": {},
   "winners": [
     { "address": "0x179b6b1cb6755e31", "amount": "3000.00" },
     { "address": "0xf3fcd2c1a78f5eee", "amount": "2000.00" }
   ]
-} 
+}
