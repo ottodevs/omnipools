@@ -1,3 +1,4 @@
+// @ts-ignore - knip may not be available during build
 import type { KnipConfig } from 'knip'
 
 export default {

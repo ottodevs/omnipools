@@ -3,7 +3,22 @@
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
 
-import { Button } from '@/components/ui/button'
+// Simple button component for demo purposes
+const Button = ({ children, onClick, variant = 'default', disabled, className = '', type = 'button', ...props }: any) => (
+  <button
+    type={type}
+    onClick={onClick}
+    disabled={disabled}
+    className={`px-4 py-2 rounded-lg font-medium transition-colors ${
+      variant === 'outline' 
+        ? 'border border-gray-300 bg-transparent hover:bg-gray-50' 
+        : 'bg-blue-600 text-white hover:bg-blue-700'
+    } ${disabled ? 'opacity-50 cursor-not-allowed' : ''} ${className}`}
+    {...props}
+  >
+    {children}
+  </button>
+)
 import useOnboarding from '@/hooks/use-onboarding'
 import { ONBOARDING_STEPS } from '@/lib/constants'
 

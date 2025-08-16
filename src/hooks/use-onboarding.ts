@@ -1,31 +1,16 @@
-// hooks/useOnboardingToggle.ts
+// hooks/useOnboardingToggle.ts (simplified for demo)
 'use client'
 import { useCallback, useEffect, useState } from 'react'
-import { API_ROUTES, COOKIE_KEYS } from '@/lib/constants'
+import { COOKIE_KEYS } from '@/lib/constants'
 
-async function fetchOnboarding() {
-  const r = await fetch(API_ROUTES.USER_COOKIES, {
-    credentials: 'include',
-    cache: 'no-store',
-  })
-  if (!r.ok)
-    throw new Error(`GET ${r.status}`)
-  const data = (await r.json()) as Record<string, boolean>
-  return data[COOKIE_KEYS.ONBOARDING_COOKIE_KEY]
+function getOnboardingFromStorage(): boolean {
+  if (typeof window === 'undefined') return false
+  return localStorage.getItem(COOKIE_KEYS.ONBOARDING_COOKIE_KEY) === 'true'
 }
 
-async function postOnboarding(value: boolean): Promise<boolean> {
-  const r = await fetch(API_ROUTES.USER_COOKIES, {
-    method: 'POST',
-    credentials: 'include',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      name: COOKIE_KEYS.ONBOARDING_COOKIE_KEY,
-      value,
-    }),
-  })
-  if (!r.ok)
-    throw new Error(`POST ${r.status}`)
+function setOnboardingInStorage(value: boolean): boolean {
+  if (typeof window === 'undefined') return false
+  localStorage.setItem(COOKIE_KEYS.ONBOARDING_COOKIE_KEY, String(value))
   return value
 }
 
@@ -41,24 +26,15 @@ export default function useOnboarding(): {
 
   // Fetch initial state on mount
   useEffect(() => {
-    const fetchInitialState = async () => {
-      try {
-        const initialValue = await fetchOnboarding()
-        setCompletedState(initialValue)
-      }
-      catch (e: unknown) {
-        setError(e as Error)
-      }
-    }
-
-    void fetchInitialState()
+    const initialValue = getOnboardingFromStorage()
+    setCompletedState(initialValue)
   }, [])
 
   const setCompleted = useCallback(async () => {
     setLoading(true)
     setError(undefined)
     try {
-      const val = await postOnboarding(true)
+      const val = setOnboardingInStorage(true)
       setCompletedState(val)
     }
     catch (e: unknown) {
