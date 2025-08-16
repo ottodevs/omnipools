@@ -1,8 +1,18 @@
 {
+	"version": 1,
 	"contracts": {
-		"FungibleTokenMock": "cadence/contracts/FungibleTokenMock.cdc",
+		"FungibleToken": "cadence/contracts/FungibleTokenMock.cdc",
+		"MockUSDC": "cadence/contracts/MockUSDC.cdc",
 		"Registry": "cadence/contracts/Registry.cdc",
 		"Vaults": "cadence/contracts/Vaults.cdc"
+	},
+	"aliases": {
+		"emulator": {
+			"FungibleToken": "0xf8d6e0586b0a20c7",
+			"MockUSDC": "0xf8d6e0586b0a20c7",
+			"Registry": "0xf8d6e0586b0a20c7",
+			"Vaults": "0xf8d6e0586b0a20c7"
+		}
 	},
 	"networks": {
 		"emulator": "127.0.0.1:3569",
@@ -33,14 +43,16 @@
 	"deployments": {
 		"emulator": {
 			"emulator-account": [
-				"FungibleTokenMock",
+				"FungibleToken",
+				"MockUSDC",
 				"Registry",
 				"Vaults"
 			]
 		},
 		"testing": {
 			"testing-account": [
-				"FungibleTokenMock",
+				"FungibleToken",
+				"MockUSDC",
 				"Registry",
 				"Vaults"
 			]
