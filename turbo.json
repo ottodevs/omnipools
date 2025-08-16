@@ -15,6 +15,10 @@
       "inputs": ["scripts/generate-icon-assets.ts", "src/components/ui/icon.tsx"],
       "outputs": ["public/icons/sprite.svg", ".next/icons-hash.txt"]
     },
+    "generate:contracts": {
+      "inputs": ["cadence/**/*"],
+      "outputs": []
+    },
     "lint": {
       "outputs": []
     },

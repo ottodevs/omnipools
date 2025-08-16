@@ -1,0 +1,9 @@
+{
+  "networks": {
+    "emulator": "127.0.0.1:3569",
+    "mainnet": "access-mainnet.onflow.org",
+    "testnet": "access-testnet.onflow.org"
+  },
+  "accounts": {},
+  "contracts": {}
+} 

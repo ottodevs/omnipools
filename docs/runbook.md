@@ -89,4 +89,23 @@ Values:
     "totalWinners": 5000.00000000
   }
 }
-``` 
+```
+
+## UI Prototype
+
+### Refresh Data Snapshots
+After running demo commands, update the UI data:
+
+```bash
+# Copy latest summary to UI
+cp .cache/summary_after.json public/data/summary_after.json
+
+# Update vault data (edit values to match your run)
+# Edit public/data/vault-1.json with latest vaultId, opId, etc.
+```
+
+The UI reads from `/public/data/vault-1.json` and shows:
+- Vault status, operation ID, total paid
+- Winner addresses and amounts
+- Exact CLI command for payout execution
+- Proof summary in JSON format 

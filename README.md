@@ -66,6 +66,21 @@ flow scripts execute ./cadence/scripts/sc_get_winner_balance.cdc 0xf8d6e0586b0a2
 flow transactions send ./cadence/transactions/tx_payout_split.cdc 0xf8d6e0586b0a20c7 1
 ```
 
+## 🖥️ UI Prototype (mocked)
+
+```bash
+# Start the UI prototype
+npm run dev
+
+# Open in browser
+open http://localhost:3000
+```
+
+- **Home**: `/` - Shows banner and link to vault
+- **Vault Details**: `/vault/1` - View winners, status, opId, totalPaid
+- **Mock Payout**: Shows exact CLI command for judges
+- **Data**: Read from `/public/data/vault-1.json` (no backend writes)
+
 ## 📊 Demo Results
 
 - **[Demo Results](assets/demo_results.txt)** - Key metrics and operation IDs
