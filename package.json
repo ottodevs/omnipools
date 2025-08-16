@@ -61,5 +61,9 @@
   "overrides": {},
   "patchedDependencies": {
     "@antfu/eslint-config@5.1.0": "config/patches/@antfu%2Feslint-config@5.1.0.patch"
-  }
+  },
+  "trustedDependencies": [
+    "@tailwindcss/oxide",
+    "unrs-resolver"
+  ]
 }
