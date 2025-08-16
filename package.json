@@ -1,12 +1,27 @@
 {
   "name": "omnipools-app",
-  "version": "0.1.0",
+  "type": "module",
   "private": true,
+  "packageManager": "bun@1.2.20",
+  "engines": {
+    "node": "22.17.0"
+  },
   "scripts": {
-    "dev": "next dev --turbopack",
-    "build": "next build",
+    "dev:next": "next dev --turbopack",
+    "analyze": "ANALYZE=true bun run build:next",
+    "build": "bun run generate:icons && bun run generate:contracts && next build",
+    "build:next": "bun run generate:icons && next build",
+    "clean": "rm -rf .next .turbo node_modules",
+    "clean:reinstall": "rm -rf node_modules .next bun.lock && bun install",
+    "dev": "turbo dev:next",
+    "fmt:all": "bun lint:fix && bun fmt:pkg && bun typecheck",
+    "fmt:check": "eslint",
+    "fmt:pkg": "bunx sort-package-json",
+    "fmt:code": "eslint --fix",
+    "generate:icons": "bun scripts/generate-icon-assets.ts",
     "start": "next start",
     "lint": "next lint",
+    "lint:fix": "eslint --fix",
     "flow:emulator": "flow emulator start --persist",
     "flow:deploy": "flow deploy",
     "flow:test": "flow scripts execute cadence/scripts/sc_test_simple.cdc",
@@ -15,24 +30,36 @@
     "flow:test:comprehensive": "flow scripts execute cadence/scripts/sc_test_comprehensive.cdc",
     "setup": "make setup",
     "test": "make test",
+    "typecheck": "tsc --noEmit",
     "hackathon": "make hackathon",
+    "unused": "knip",
     "docs": "echo '📚 Documentation available in ./docs/'"
   },
   "dependencies": {
-    "@onflow/react-sdk": "^0.10.1",
+    "@onflow/react-sdk": "0.10.1",
     "next": "15.4.6",
     "react": "19.1.0",
     "react-dom": "19.1.0"
   },
   "devDependencies": {
-    "typescript": "^5",
-    "@types/node": "^20",
-    "@types/react": "^19",
-    "@types/react-dom": "^19",
-    "@tailwindcss/postcss": "^4",
-    "tailwindcss": "^4",
-    "eslint": "^9",
+    "@antfu/eslint-config": "5.2.1",
+    "@eslint-react/eslint-plugin": "1.52.5",
+    "@eslint/eslintrc": "3.3.1",
+    "@prettier/plugin-xml": "3.4.2",
+    "@tailwindcss/postcss": "4.1.12",
+    "@types/node": "20.19.11",
+    "@types/react": "19.1.10",
+    "@types/react-dom": "19.1.7",
+    "eslint": "9.33.0",
     "eslint-config-next": "15.4.6",
-    "@eslint/eslintrc": "^3"
+    "eslint-plugin-better-tailwindcss": "3.7.4",
+    "eslint-plugin-format": "1.0.1",
+    "eslint-plugin-react-refresh": "0.4.20",
+    "tailwindcss": "4.1.12",
+    "typescript": "5.8.3"
+  },
+  "overrides": {},
+  "patchedDependencies": {
+    "@antfu/eslint-config@5.1.0": "config/patches/@antfu%2Feslint-config@5.1.0.patch"
   }
 }
