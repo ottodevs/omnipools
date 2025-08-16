@@ -48,6 +48,19 @@ make status      # Check status
 make reset       # Reset everything
 ```
 
+## 🎯 Demo Commands
+
+```bash
+# Run the complete demo with Flow Actions
+./scripts/demo.sh
+
+# Check winner balances
+flow scripts execute ./cadence/scripts/sc_get_winner_balance.cdc 0xf8d6e0586b0a20c7
+
+# Execute payout manually
+flow transactions send ./cadence/transactions/tx_payout_split.cdc 0xf8d6e0586b0a20c7 1
+```
+
 ## 🔗 Links
 
 - **Frontend**: http://localhost:3000
