@@ -68,20 +68,22 @@ flow scripts execute ./cadence/scripts/sc_get_winner_balance.cdc 0xf8d6e0586b0a2
 flow transactions send ./cadence/transactions/tx_payout_split.cdc 0xf8d6e0586b0a20c7 1
 ```
 
-## 🖥️ UI Prototype (mocked)
+## 🖥️ UI Prototype
 
 ```bash
-# Start the UI prototype
-npm run dev
+# One-command judge flow (recommended)
+bun run judge
 
-# Open in browser
-open http://localhost:3000
+# Or step by step:
+bun run dev          # Start UI
+bun run snapshot-ui  # Refresh data from CLI results
 ```
 
 - **Home**: `/` - Shows banner and link to vault
 - **Vault Details**: `/vault/1` - View winners, status, opId, totalPaid
-- **Mock Payout**: Shows exact CLI command for judges
-- **Data**: Read from `/public/data/vault-1.json` (no backend writes)
+- **Refresh Button**: Updates data from latest CLI run
+- **Error Handling**: Graceful fallbacks and loading states
+- **Data Pipeline**: `scripts/refresh-ui.sh` copies CLI results to UI
 
 ## 📊 Demo Results
 

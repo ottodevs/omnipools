@@ -93,19 +93,34 @@ Values:
 
 ## UI Prototype
 
-### Refresh Data Snapshots
+### One-Command Judge Flow
+```bash
+# Start emulator, run demo, refresh UI, and serve app
+bun run judge
+```
+
+### Manual UI Refresh
 After running demo commands, update the UI data:
 
 ```bash
-# Copy latest summary to UI
-cp .cache/summary_after.json public/data/summary_after.json
+# Automated data pipeline
+bun run snapshot-ui
 
-# Update vault data (edit values to match your run)
-# Edit public/data/vault-1.json with latest vaultId, opId, etc.
+# This copies CLI results to UI and normalizes JSON
+# Output: public/data/summary_after.json, public/data/vault-1.json
 ```
 
+### UI Features
 The UI reads from `/public/data/vault-1.json` and shows:
-- Vault status, operation ID, total paid
-- Winner addresses and amounts
-- Exact CLI command for payout execution
-- Proof summary in JSON format 
+- **Vault status, operation ID, total paid** with color-coded status chips
+- **Winner addresses and amounts** in a clean card layout
+- **Misses section** for failed payouts (weak guarantees)
+- **Refresh button** to update data from latest CLI run
+- **Error handling** with graceful fallbacks and loading states
+- **Exact CLI command** for payout execution
+- **Proof summary** in JSON format
+
+### UI Screenshots
+- **Home**: `/` - Banner with vault link
+- **Vault Details**: `/vault/1` - Complete payout status and data
+- **Mobile responsive** with proper contrast and spacing 
