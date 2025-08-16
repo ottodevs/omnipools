@@ -39,9 +39,11 @@ make test-all
 
 ## 📚 Documentation
 
-- **[📖 Main Guide](docs/README.md)** - Complete project overview
-- **[🗽 Hackathon Guide](docs/HACKATHON.md)** - Essential commands for hackathon
-- **[🛠️ Development Guide](docs/DEVELOPMENT.md)** - Best practices and workflow
+- **[📖 Documentation Hub](docs/README.md)** - Complete documentation index
+- **[🚀 Getting Started](docs/guides/)** - Overview, hackathon guide, runbook
+- **[🛠️ Development](docs/development/)** - Development guides and best practices
+- **[📖 Reference](docs/reference/)** - Architecture and API documentation
+- **[📊 Reports](docs/reports/)** - Technical reports and summaries
 
 ## 🛠️ Essential Commands
 

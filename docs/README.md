@@ -1,158 +1,79 @@
-# OmniPools - Multi-Chain Vault Management
+# OmniPools Documentation
 
-A comprehensive vault management system for bounties, grants, and tournaments built on Flow blockchain.
+Welcome to the OmniPools documentation! This is a comprehensive vault management system for bounties, grants, and tournaments built on Flow blockchain.
 
-## 🚀 Quick Start
+## 📚 Documentation Structure
 
+### 🚀 Getting Started
+- **[Overview](guides/overview.md)** - Complete project overview and architecture
+- **[Hackathon Guide](guides/hackathon.md)** - Essential commands for hackathon participants
+- **[Runbook](guides/runbook.md)** - Step-by-step operational procedures
+- **[Troubleshooting](guides/troubleshooting.md)** - Common issues and solutions
+
+### 🛠️ Development
+- **[Development Guide](development/guide.md)** - Development workflow and setup
+- **[Best Practices](development/best-practices.md)** - Coding standards and guidelines
+- **[Testing](development/testing.md)** - Testing strategies and frameworks
+- **[Testing Migration](development/testing-migration.md)** - Migration guide for testing
+
+### 📖 Reference
+- **[Architecture](reference/architecture.md)** - System architecture and structure
+- **[Flow Actions](reference/actions.md)** - Flow Actions integration guide
+
+### 📊 Reports
+- **[H1-H3 Embedded Metadata Report](reports/REPORT_H1_H3_EMBEDDED_METADATA.md)** - Technical implementation report
+- **[Emulator Solution Summary](reports/EMULATOR_SOLUTION_SUMMARY.md)** - Emulator setup and configuration
+- **[UI Prototype Summary](reports/UI_PROTOTYPE_SUMMARY.md)** - Frontend implementation details
+- **[Commit Summary](reports/COMMIT_SUMMARY.md)** - Development progress tracking
+- **[Cadence IDE Issues](reports/CADENCE_IDE_ISSUES.md)** - Known issues and workarounds
+- **[H0-H1 Setup Report](reports/H0_H1_SETUP.md)** - Initial setup documentation
+
+### 🚀 Deployment
+- **[Hackathon Setup](deployment/hackathon-setup.sh)** - Automated setup script for hackathon
+
+## 🎯 Quick Start
+
+### For Judges (60-second demo)
 ```bash
-# One command setup
+# Start emulator and run demo
+flow emulator start --verbose
+./scripts/demo.sh
+```
+
+### For Developers
+```bash
+# Full setup
 make hackathon
 
 # Start development
-make dev
-```
+npm run dev
 
-## 📋 Prerequisites
-
-- [Bun](https://bun.sh/) - Package manager
-- [Flow CLI](https://developers.flow.com/tools/flow-cli) - Flow blockchain tools
-
-## 🛠️ Development Commands
-
-### Setup
-```bash
-make install     # Install dependencies
-make setup       # Setup emulator + deploy contracts
-make hackathon   # Full setup (recommended)
-```
-
-### Development
-```bash
-make dev         # Start Next.js dev server
-make flow        # Start Flow emulator
-make test        # Run all tests
-```
-
-### Testing
-```bash
-make test-simple # Basic contract tests
-make test-e2e    # End-to-end tests
-make test-vault  # Vault operations
-```
-
-### Debug & Status
-```bash
-make status      # Check emulator status
-make logs        # View emulator logs
-make reset       # Reset emulator
-```
-
-## 🏗️ Architecture
-
-### Smart Contracts
-- **Registry.cdc** - Organization and badge management
-- **Vaults.cdc** - Multi-vault system with participants/winners
-- **FungibleTokenMock.cdc** - Mock token for testing
-
-### Frontend
-- **Next.js 15** with React 19
-- **Flow React SDK** for wallet integration
-- **Tailwind CSS** for styling
-
-## 📁 Project Structure
-
-```
-├── cadence/
-│   ├── contracts/     # Smart contracts
-│   ├── scripts/       # Read-only operations
-│   ├── transactions/  # State-changing operations
-│   └── test/         # Contract tests
-├── src/
-│   ├── app/          # Next.js app router
-│   └── components/   # React components
-├── docs/             # Documentation
-├── scripts/          # Setup scripts
-├── Makefile          # Development commands
-└── flow.json         # Flow configuration
-```
-
-## 🔧 Contract Features
-
-### Vault Types
-- **Bounty** - Single winner competitions
-- **StakingHouse** - Multi-participant pools
-- **GrantRound** - Funding rounds
-- **Tournament** - Multi-stage competitions
-- **GroupFund** - Collaborative funding
-
-### Key Operations
-- Create organizations and vaults
-- Add participants and operators
-- Record funding and receipts
-- Set winners and plan payouts
-- Multi-chain payout support
-
-## 🧪 Testing
-
-```bash
-# Run all tests
+# Run tests
 make test
-
-# Individual test suites
-make test-simple  # Basic functionality
-make test-e2e     # Full workflows
-make test-vault   # Vault operations
 ```
 
-## 🚀 Deployment
-
-### Local Development
+### For UI Demo
 ```bash
-make setup        # Deploy to emulator
-make dev          # Start frontend
+# Start UI prototype
+npm run dev
+
+# Open in browser
+open http://localhost:3000
 ```
 
-### Testnet/Mainnet
-```bash
-# Update flow.json networks
-flow deploy --network testnet
-```
-
-## 📚 API Reference
-
-### Core Transactions
-- `tx_create_org.cdc` - Create organization
-- `tx_create_vault.cdc` - Create vault
-- `tx_add_participant.cdc` - Add participant
-- `tx_set_winners.cdc` - Set winners
-- `tx_plan_payout.cdc` - Plan payout
-
-### Core Scripts
-- `sc_get_summary.cdc` - Get vault summary
-- `sc_get_participants.cdc` - List participants
-- `sc_get_winners.cdc` - Get winners
-- `sc_list_vaults_by_org.cdc` - List org vaults
-
-## 🔗 Links
+## 🔗 Key Links
 
 - **Frontend**: http://localhost:3000
 - **Emulator**: http://localhost:3569
 - **Flow Docs**: https://developers.flow.com/
-- **Cadence Docs**: https://developers.flow.com/cadence
 
-## 🆘 Troubleshooting
+## 📋 Project Status
 
-```bash
-# Reset everything
-make reset
-
-# Check status
-make status
-
-# View logs
-make logs
-```
+- ✅ **H1-H3**: Core contracts and Flow Actions
+- ✅ **H4**: Testing and validation
+- ✅ **H5**: UI prototype (mocked)
+- 🎯 **Ready for demo**: Complete system with CLI and UI
 
 ---
 
-Built for ETHGlobal New York 2025 🗽 
+*Built for ETHGlobal New York 2025 🗽* 

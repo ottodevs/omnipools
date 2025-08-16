@@ -1,5 +1,1 @@
-{
-  "network": "emulator",
-  "configPath": "./flow.json",
-  "emulatorAddress": "127.0.0.1:3569"
-}
+config/flow/cadence.json

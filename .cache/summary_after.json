@@ -1,4 +1,0 @@
-
-Result: {"lastUpdated": 1755380471.00000000, "counts": {"participants": 4, "fundingNotes": 0, "receipts": 0, "winners": 2}, "totals": {"receipts": 0.00000000, "funding": 0.00000000, "winners": 5000.00000000}, "vault": {"id": 1, "logoCID": nil, "status": "Paid", "receiptCount": 0, "totalFunding": 0.00000000, "org": 0xf8d6e0586b0a20c7, "kind": 0, "externalURL": nil, "participantCount": 4, "totalWinners": 5000.00000000, "winnerCount": 2, "description": "Top bounties paid via Flow Actions.", "lastOperationId": 2, "fundingNoteCount": 0, "createdAt": 1755380438.00000000, "name": "ETHGlobal NY Bounties", "bannerCID": nil}}
-
-
