@@ -24,10 +24,10 @@ export default function NetworkSelector() {
     try {
       await switchNetwork(networkId)
       
-      // Mostrar notificación de éxito
+              // Show success notification
       console.log(`Switched to ${networkId} network`)
       
-      // En lugar de recargar, usar un timeout para permitir que React termine de actualizar
+      // Instead of reloading, use timeout to let React finish updating
       setTimeout(() => {
         setIsLoading(false)
         setIsOpen(false)

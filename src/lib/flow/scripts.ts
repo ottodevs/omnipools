@@ -1,6 +1,6 @@
 /**
- * Scripts Cadence optimizados con address replacement
- * FCL config reemplaza automáticamente 0xVaults con la dirección correcta
+ * Optimized Cadence scripts with address replacement
+ * FCL config automatically replaces 0xVaults with the correct address
  */
 
 export const CADENCE_SCRIPTS = {
@@ -21,7 +21,7 @@ export const CADENCE_SCRIPTS = {
         return nil
     }
   `,
-  
+
   getVaultWinners: `
     import Vaults from 0xVaults
 
@@ -39,7 +39,7 @@ export const CADENCE_SCRIPTS = {
         return []
     }
   `,
-  
+
   getVaultParticipants: `
     import Vaults from 0xVaults
 
@@ -57,7 +57,7 @@ export const CADENCE_SCRIPTS = {
         return []
     }
   `,
-  
+
   getVaultReceipts: `
     import Vaults from 0xVaults
 
@@ -76,7 +76,7 @@ export const CADENCE_SCRIPTS = {
     }
   `,
 
-  // Nuevos scripts útiles
+  // Useful additional scripts
   getVaultsByOrg: `
     import Vaults from 0xVaults
 
@@ -112,5 +112,5 @@ export const CADENCE_SCRIPTS = {
         
         return nil
     }
-  `
+  `,
 }

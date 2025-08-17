@@ -98,7 +98,7 @@ export const useVaultData = (orgAddress: string, vaultId: string) => {
         }
       }
 
-      // Datos de demostración (fallback o modo demo)
+      // Demo data (fallback or demo mode)
       const completeData: VaultData = {
         vaultId: parseInt(vaultId),
         org: orgAddress,

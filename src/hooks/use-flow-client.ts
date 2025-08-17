@@ -2,19 +2,19 @@ import * as fcl from '@onflow/fcl'
 import { CADENCE_SCRIPTS } from '@/lib/flow/scripts'
 
 /**
- * Hook simplificado para interactuar con Flow usando FCL optimizado
- * Usa la nueva configuración con config.load() y scripts simplificados
+ * Simplified hook for interacting with Flow using optimized FCL
+ * Uses the new configuration with config.load() and simplified scripts
  */
 export const useFlowClient = () => {
   return {
-    // Métodos principales de FCL
+    // Main FCL methods
     query: fcl.query,
     mutate: fcl.mutate,
     authenticate: fcl.authenticate,
     unauthenticate: fcl.unauthenticate,
     currentUser: fcl.currentUser,
     
-    // Scripts predefinidos optimizados
+    // Optimized predefined scripts
     scripts: CADENCE_SCRIPTS,
     
     // Utilities

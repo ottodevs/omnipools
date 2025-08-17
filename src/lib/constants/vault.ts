@@ -1,9 +1,9 @@
-// Dirección de la organización para el demo (configurable por env)
+// Demo organization address (configurable via env)
 export const DEMO_ORG_ADDRESS = process.env.NEXT_PUBLIC_DEMO_ORG_ADDRESS || "0xf8d6e0586b0a20c7";
 
 /**
- * Transacciones de Cadence optimizadas
- * Usando imports simples gracias a config.load() con flow.json
+ * Optimized Cadence transactions
+ * Using simple imports thanks to config.load() with flow.json
  */
 export const CADENCE_TRANSACTIONS = {
   payoutSplit: `

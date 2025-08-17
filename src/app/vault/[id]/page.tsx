@@ -93,7 +93,7 @@ export default function VaultPage() {
   const payoutCmd = `flow transactions send ./cadence/transactions/tx_payout_split.cdc ${data.org} ${data.vaultId}`
   const statusColor = data.status === 'Paid' ? 'bg-emerald-500/20 text-emerald-200' : 'bg-amber-500/20 text-amber-200'
 
-  // Calcular misses basándose en la diferencia entre participantes y winners
+  // Calculate misses based on difference between participants and winners
   const misses: Record<string, string> = {}
   if (showMisses && data) {
     const winnerAddresses = new Set(data.winners.map(w => w.address))

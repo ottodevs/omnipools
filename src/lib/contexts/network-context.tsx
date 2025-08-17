@@ -1,8 +1,10 @@
-"use client"
+'use client'
 
-import { createContext, useContext, useState, useEffect, ReactNode } from 'react'
-import { initializeFlowConfig, NetworkType, NETWORK_CONFIGS } from '../flow/config'
+import type { ReactNode } from 'react'
+import type { NetworkType } from '../flow/config'
 import * as fcl from '@onflow/fcl'
+import { createContext, use, useEffect, useState } from 'react'
+import { initializeFlowConfig, NETWORK_CONFIGS } from '../flow/config'
 
 interface NetworkContextType {
   currentNetwork: NetworkType
@@ -24,7 +26,7 @@ export function NetworkProvider({ children }: { children: ReactNode }) {
   const [isAuthenticated, setIsAuthenticated] = useState(false)
   const [user, setUser] = useState(null)
 
-  // Hidratación segura: sincronizar con localStorage solo después del mount
+  // Safe hydration: sync with localStorage only after mount
   useEffect(() => {
     if (typeof window !== 'undefined') {
       const saved = localStorage.getItem('flow-network') as NetworkType
@@ -37,7 +39,7 @@ export function NetworkProvider({ children }: { children: ReactNode }) {
 
   const networkConfig = NETWORK_CONFIGS[currentNetwork]
 
-  // ✨ OPTIMIZACIÓN: Configurar FCL usando nueva arquitectura optimizada
+  // ✨ OPTIMIZATION: Configure FCL using new optimized architecture
   useEffect(() => {
     if (isHydrated) {
       console.log('🔄 Initializing FCL for network:', currentNetwork)
@@ -45,7 +47,7 @@ export function NetworkProvider({ children }: { children: ReactNode }) {
     }
   }, [currentNetwork, isHydrated])
 
-  // Suscribirse a cambios de autenticación
+  // Subscribe to authentication changes
   useEffect(() => {
     const unsubscribe = fcl.currentUser.subscribe((user: any) => {
       setUser(user)
@@ -56,20 +58,20 @@ export function NetworkProvider({ children }: { children: ReactNode }) {
   }, [])
 
   const switchNetwork = async (network: NetworkType) => {
-    // Si el usuario está autenticado, desautenticar primero
+    // If user is authenticated, unauthenticate first
     if (isAuthenticated) {
       await fcl.unauthenticate()
     }
 
-    // Cambiar red
+    // Switch network
     setCurrentNetwork(network)
-    
-    // Guardar en localStorage
+
+    // Save to localStorage
     if (typeof window !== 'undefined') {
       localStorage.setItem('flow-network', network)
     }
-    
-    // La configuración FCL se maneja automáticamente en el useEffect
+
+    // FCL configuration is handled automatically in useEffect
     console.log('🔄 Switched to network:', network)
   }
 
@@ -82,7 +84,7 @@ export function NetworkProvider({ children }: { children: ReactNode }) {
   }
 
   return (
-    <NetworkContext.Provider value={{
+    <NetworkContext value={{
       currentNetwork,
       networkConfig,
       switchNetwork,
@@ -90,15 +92,16 @@ export function NetworkProvider({ children }: { children: ReactNode }) {
       user,
       authenticate,
       unauthenticate,
-      isHydrated
-    }}>
+      isHydrated,
+    }}
+    >
       {children}
-    </NetworkContext.Provider>
+    </NetworkContext>
   )
 }
 
 export function useNetwork() {
-  const context = useContext(NetworkContext)
+  const context = use(NetworkContext)
   if (context === undefined) {
     throw new Error('useNetwork must be used within a NetworkProvider')
   }

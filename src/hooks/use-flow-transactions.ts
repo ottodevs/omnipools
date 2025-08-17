@@ -16,7 +16,7 @@ export const useFlowTransactions = () => {
   const [user, setUser] = useState<any>({ loggedIn: false })
 
   useEffect(() => {
-    // Suscribirse a cambios en el usuario actual con FCL directo
+    // Subscribe to current user changes with direct FCL
     const unsubscribe = fcl.currentUser.subscribe(setUser)
     return () => unsubscribe && unsubscribe()
   }, [])
@@ -45,26 +45,26 @@ export const useFlowTransactions = () => {
       console.log('📝 Cadence:', cadence.substring(0, 100) + '...')
       console.log('📊 Args:', args)
 
-      // FIX: Usar FCL.authz directamente en lugar de user.authorization
+      // FIX: Use FCL.authz directly instead of user.authorization
       const transactionId = await fcl.mutate({
         cadence,
         args: (arg, t) => {
-          // Convertir args si vienen en formato [{value, type}]
+          // Convert args if they come in format [{value, type}]
           if (args.length > 0 && args[0]?.value !== undefined) {
             return args.map(a => arg(a.value, a.type))
           }
-          // O usar args directamente si vienen como función
+          // Or use args directly if they come as a function
           return typeof args === 'function' ? args(arg, t) : []
         },
-        proposer: fcl.authz,      // ✅ FIX: Usar fcl.authz
-        payer: fcl.authz,         // ✅ FIX: Usar fcl.authz  
-        authorizations: [fcl.authz], // ✅ FIX: Usar fcl.authz
+        proposer: fcl.authz,      // ✅ FIX: Use fcl.authz
+        payer: fcl.authz,         // ✅ FIX: Use fcl.authz  
+        authorizations: [fcl.authz], // ✅ FIX: Use fcl.authz
         limit: 1000
       })
 
       console.log('🔄 Transaction submitted:', transactionId)
 
-      // Esperar confirmación de la transacción
+      // Wait for transaction confirmation
       const transaction = await fcl.tx(transactionId).onceSealed()
       
       console.log('✅ Transaction sealed:', transaction)
