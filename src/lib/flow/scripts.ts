@@ -1,11 +1,11 @@
 /**
- * Scripts Cadence optimizados usando imports simples
- * Gracias a config.load() con flow.json, los contracts se resuelven automáticamente
+ * Scripts Cadence optimizados con address replacement
+ * FCL config reemplaza automáticamente 0xVaults con la dirección correcta
  */
 
 export const CADENCE_SCRIPTS = {
   getVault: `
-    import "Vaults"
+    import Vaults from 0xVaults
 
     access(all) fun main(orgAddr: Address, vaultId: UInt64): {String: AnyStruct}? {
         let orgAccount = getAccount(orgAddr)
@@ -23,7 +23,7 @@ export const CADENCE_SCRIPTS = {
   `,
   
   getVaultWinners: `
-    import "Vaults"
+    import Vaults from 0xVaults
 
     access(all) fun main(orgAddr: Address, vaultId: UInt64): [Vaults.FlowUSDCWinner] {
         let orgAccount = getAccount(orgAddr)
@@ -41,7 +41,7 @@ export const CADENCE_SCRIPTS = {
   `,
   
   getVaultParticipants: `
-    import "Vaults"
+    import Vaults from 0xVaults
 
     access(all) fun main(orgAddr: Address, vaultId: UInt64): [Vaults.Participant] {
         let orgAccount = getAccount(orgAddr)
@@ -59,7 +59,7 @@ export const CADENCE_SCRIPTS = {
   `,
   
   getVaultReceipts: `
-    import "Vaults"
+    import Vaults from 0xVaults
 
     access(all) fun main(orgAddr: Address, vaultId: UInt64): [{String: String}] {
         let orgAccount = getAccount(orgAddr)
@@ -78,7 +78,7 @@ export const CADENCE_SCRIPTS = {
 
   // Nuevos scripts útiles
   getVaultsByOrg: `
-    import "Vaults"
+    import Vaults from 0xVaults
 
     access(all) fun main(orgAddr: Address): [UInt64] {
         let orgAccount = getAccount(orgAddr)
@@ -94,7 +94,7 @@ export const CADENCE_SCRIPTS = {
   `,
 
   getOrgInfo: `
-    import "Registry"
+    import Registry from 0xRegistry
 
     access(all) fun main(orgAddr: Address): {String: AnyStruct}? {
         let orgAccount = getAccount(orgAddr)

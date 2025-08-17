@@ -7,7 +7,7 @@ export const DEMO_ORG_ADDRESS = process.env.NEXT_PUBLIC_DEMO_ORG_ADDRESS || "0xf
  */
 export const CADENCE_TRANSACTIONS = {
   payoutSplit: `
-    import "Vaults"
+    import Vaults from 0xVaults
 
     transaction(orgAddr: Address, vaultId: UInt64) {
         let vaultCollection: &Vaults.VaultCollection?
@@ -50,7 +50,7 @@ export const CADENCE_TRANSACTIONS = {
   `,
   
   addParticipant: `
-    import "Vaults"
+    import Vaults from 0xVaults
 
     transaction(orgAddr: Address, vaultId: UInt64, participantAddr: Address, meta: {String: String}) {
         let orgAccount: &Account
@@ -73,7 +73,7 @@ export const CADENCE_TRANSACTIONS = {
   `,
   
   setWinners: `
-    import "Vaults"
+    import Vaults from 0xVaults
 
     transaction(orgAddr: Address, vaultId: UInt64) {
         let orgAccount: &Account

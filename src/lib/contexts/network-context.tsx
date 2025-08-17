@@ -35,6 +35,8 @@ export function NetworkProvider({ children }: { children: ReactNode }) {
     }
   }, [])
 
+  const networkConfig = NETWORK_CONFIGS[currentNetwork]
+
   // ✨ OPTIMIZACIÓN: Configurar FCL usando nueva arquitectura optimizada
   useEffect(() => {
     if (isHydrated) {
