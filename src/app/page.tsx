@@ -13,6 +13,7 @@ export default function Home() {
             <Link href="/create" className="rounded-xl bg-blue-500 px-4 py-2 hover:bg-blue-600">Create New</Link>
             <Link href="/pools" className="rounded-xl bg-white/10 px-4 py-2 hover:bg-white/20">View Pools</Link>
             <Link href="/vault/1" className="rounded-xl bg-white/10 px-4 py-2 hover:bg-white/20">Open Vault #1</Link>
+            <Link href="/vault/2" className="rounded-xl bg-white/10 px-4 py-2 hover:bg-white/20">Open Vault #2</Link>
           </div>
         </div>
         

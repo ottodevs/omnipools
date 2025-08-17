@@ -53,12 +53,12 @@ export const useFlowTransactions = () => {
           if (args.length > 0 && args[0]?.value !== undefined) {
             return args.map(a => arg(a.value, a.type))
           }
-          // Or use args directly if they come as a function
-          return typeof args === 'function' ? args(arg, t) : []
+          // Return empty array if no args
+          return []
         },
-        proposer: fcl.authz,      // ✅ FIX: Use fcl.authz
-        payer: fcl.authz,         // ✅ FIX: Use fcl.authz  
-        authorizations: [fcl.authz], // ✅ FIX: Use fcl.authz
+        proposer: fcl.authz as any,
+        payer: fcl.authz as any,
+        authorizations: [fcl.authz as any],
         limit: 1000
       })
 
@@ -71,7 +71,7 @@ export const useFlowTransactions = () => {
 
       const transactionResult: TransactionResult = {
         status: 'success',
-        transactionId: transaction.transactionId,
+        transactionId: transactionId,
         events: transaction.events
       }
 

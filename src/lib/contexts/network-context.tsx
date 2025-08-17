@@ -6,6 +6,9 @@ import * as fcl from '@onflow/fcl'
 import { createContext, use, useEffect, useState } from 'react'
 import { initializeFlowConfig, NETWORK_CONFIGS } from '../flow/config'
 
+// Re-export NetworkType for convenience
+export type { NetworkType }
+
 interface NetworkContextType {
   currentNetwork: NetworkType
   networkConfig: typeof NETWORK_CONFIGS[NetworkType]
