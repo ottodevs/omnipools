@@ -1,0 +1,18 @@
+<svg width="512" height="512" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background circle -->
+  <circle cx="256" cy="256" r="240" fill="#3b82f6"/>
+  
+  <!-- Inner circle representing pools -->
+  <circle cx="256" cy="256" r="180" fill="#1e40af" stroke="#60a5fa" stroke-width="4"/>
+  
+  <!-- Three interconnected circles representing omni-pools -->
+  <circle cx="200" cy="200" r="50" fill="#60a5fa" fill-opacity="0.8"/>
+  <circle cx="312" cy="200" r="50" fill="#60a5fa" fill-opacity="0.8"/>
+  <circle cx="256" cy="280" r="50" fill="#60a5fa" fill-opacity="0.8"/>
+  
+  <!-- Central connecting element -->
+  <circle cx="256" cy="230" r="20" fill="#ffffff"/>
+  
+  <!-- Text "OP" in center -->
+  <text x="256" y="245" font-family="Arial, sans-serif" font-size="32" font-weight="bold" fill="#1e40af" text-anchor="middle">OP</text>
+</svg>
