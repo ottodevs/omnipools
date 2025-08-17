@@ -98,6 +98,81 @@ export const useVaultData = (orgAddress: string, vaultId: string) => {
         }
       }
 
+      // Check for Vault #1 from public data
+      if (vaultId === '1') {
+        try {
+          const response = await fetch('/data/vault-1.json')
+          if (response.ok) {
+            const vault1Data = await response.json()
+            const completeData: VaultData = {
+              vaultId: vault1Data.vaultId,
+              org: vault1Data.org,
+              name: vault1Data.name,
+              description: vault1Data.description,
+              status: vault1Data.status,
+              lastOperationId: vault1Data.lastOperationId,
+              totalPaid: vault1Data.totalPaid,
+              totalFunding: '5000.00', // From the demo data
+              participantCount: 2, // Based on winners count
+              winnerCount: vault1Data.winners.length,
+              createdAt: Date.now().toString(),
+              bannerCID: '',
+              logoCID: '',
+              externalURL: '',
+              winners: vault1Data.winners,
+              participants: vault1Data.winners.map((w: any, i: number) => ({
+                id: (i + 1).toString(),
+                address: w.address,
+                meta: {},
+                addedAt: Date.now().toString()
+              })),
+              receipts: [
+                { amount: vault1Data.totalPaid, vendor: 'ETHGlobal', uri: 'https://ethglobal.com' }
+              ],
+              misses: vault1Data.misses
+            }
+            setData(completeData)
+            return
+          }
+        } catch (error) {
+          console.error('Error loading Vault #1 from public data:', error)
+        }
+      }
+
+      // Check for Vault #2 in localStorage
+      if (vaultId === '2') {
+        const vault2Data = localStorage.getItem('op_vault_2')
+        if (vault2Data) {
+          try {
+            const parsedVault2 = JSON.parse(vault2Data)
+            const completeData: VaultData = {
+              vaultId: parsedVault2.vaultId,
+              org: parsedVault2.org,
+              name: parsedVault2.name,
+              description: parsedVault2.description,
+              status: parsedVault2.status,
+              lastOperationId: parsedVault2.lastOperationId,
+              totalPaid: parsedVault2.totalPaid,
+              totalFunding: '0.00', // Draft vault has no funding yet
+              participantCount: 0, // Draft vault has no participants yet
+              winnerCount: parsedVault2.winners.length,
+              createdAt: Date.now().toString(),
+              bannerCID: '',
+              logoCID: '',
+              externalURL: '',
+              winners: parsedVault2.winners,
+              participants: [],
+              receipts: [],
+              misses: parsedVault2.misses
+            }
+            setData(completeData)
+            return
+          } catch (error) {
+            console.error('Error parsing Vault #2 from localStorage:', error)
+          }
+        }
+      }
+
       // Demo data (fallback or demo mode)
       const completeData: VaultData = {
         vaultId: parseInt(vaultId),

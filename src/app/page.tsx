@@ -9,7 +9,11 @@ export default function Home() {
         
         <div className="flex items-center justify-between mb-6">
           <h1 className="text-3xl font-semibold">OmniPools — Flow Actions demo</h1>
-          <Link href="/vault/1" className="rounded-xl bg-white/10 px-4 py-2 hover:bg-white/20">Open Vault #1</Link>
+          <div className="flex gap-2">
+            <Link href="/create" className="rounded-xl bg-blue-500 px-4 py-2 hover:bg-blue-600">Create New</Link>
+            <Link href="/pools" className="rounded-xl bg-white/10 px-4 py-2 hover:bg-white/20">View Pools</Link>
+            <Link href="/vault/1" className="rounded-xl bg-white/10 px-4 py-2 hover:bg-white/20">Open Vault #1</Link>
+          </div>
         </div>
         
         <p className="mb-6 text-white/70">Chain-abstracted payouts for events. Atomic, audit-ready.</p>
