@@ -28,6 +28,9 @@
     "flow:test:e2e": "flow scripts execute cadence/scripts/sc_test_end_to_end_simple.cdc",
     "flow:test:vault": "flow scripts execute cadence/scripts/sc_test_vault_operations.cdc",
     "flow:test:comprehensive": "flow scripts execute cadence/scripts/sc_test_comprehensive.cdc",
+    "flow:test:integration": "./scripts/test-flow-integration.sh",
+    "flow:start": "flow emulator start --persist",
+    "flow:stop": "flow emulator stop",
     "setup": "make setup",
     "test": "make test",
     "typecheck": "tsc --noEmit",
@@ -39,7 +42,7 @@
     "reset-run": "./scripts/reset-and-run.sh"
   },
   "dependencies": {
-    "@onflow/react-sdk": "0.10.1",
+    "@onflow/fcl": "^1.12.2",
     "next": "15.4.6",
     "react": "19.1.0",
     "react-dom": "19.1.0"
