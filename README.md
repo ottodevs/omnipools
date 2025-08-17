@@ -4,7 +4,7 @@ Chain-abstracted payouts for events. Atomic, audit-ready.
 
 ## Live Demo
 
-🚀 **[Live Demo](https://omnipools.vercel.app)** *(Coming soon - Vercel deployment in progress)*
+🚀 **[Live Demo](https://omnipools-3tv0n7q64-ottodevs-projects.vercel.app)** - Deployed and verified ✅
 
 ## Quick Start
 
