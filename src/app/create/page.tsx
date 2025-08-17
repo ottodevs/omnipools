@@ -10,7 +10,7 @@ import { processImageFile, validateImageFile, ImageMetadata } from '@/lib/utils/
 import { createVaultTransaction, waitForTransaction } from '@/lib/flow/transactions'
 import { useFlowTransactions } from '@/hooks/use-flow-transactions'
 
-import { motion } from 'framer-motion'
+import { motion, AnimatePresence } from 'framer-motion'
 
 interface Recipe {
   name: string
@@ -32,121 +32,122 @@ interface Vault2 {
   org: string
   name: string
   description: string
+  kind: string
   status: string
-  lastOperationId: number
-  totalPaid: string
-  winners: Array<{ address: string; amount: string }>
-  misses: Record<string, string>
+  createdAt: string
 }
 
 const PRESET_PROMPTS = [
-  {
-    title: "🏠 Hacker House",
-    description: "Accommodation staking pool",
-    prompt: "Hacker house with 20 accommodations, $50 stake, returned after the participant submits the hackathon project"
-  },
-  {
-    title: "🎰 Farcaster Lottery",
-    description: "Social media lottery",
-    prompt: "Random lottery number, ticket $1, must follow someone on farcaster, winner gets 90% of the pool prize"
-  },
-  {
-    title: "🃏 Poker Tournament",
-    description: "Multi-round competition",
-    prompt: "Weekly poker tournament, $25 buy-in, 8 players max, winner takes 70%, runner-up gets 20%, third place gets 10%"
-  },
-  {
-    title: "🏀 March Madness Bracket",
-    description: "Sports prediction contest",
-    prompt: "Basketball bracket contest, $10 entry fee, predict tournament winners, most correct picks wins 80% of pool"
-  },
-  {
-    title: "🎓 Learn2Earn Workshop",
-    description: "Educational completion rewards",
-    prompt: "Web3 development workshop, $20 deposit, refunded plus $30 bonus upon completing all modules and final project"
-  },
-  {
-    title: "🐛 Bug Bounty Program",
-    description: "Security vulnerability rewards",
-    prompt: "Smart contract bug bounty, $500-5000 rewards based on severity, requires KYC verification, cross-chain compatible"
-  }
+  "Create a hackathon with $10k USDC prizes for 200 participants",
+  "Set up group funding for community project with $5k target",
+  "Launch bounty program with KYC requirement and Circle CCTP",
+  "Organize tournament with ticket system and VRF for random rewards"
+]
+
+// Step definitions
+type Step = 'template' | 'details' | 'settings' | 'review' | 'deploy'
+
+const STEPS: { key: Step; title: string; description: string }[] = [
+  { key: 'template', title: 'Choose Template', description: 'Select your pool type and generate configuration' },
+  { key: 'details', title: 'Pool Details', description: 'Set name, description, and visual assets' },
+  { key: 'settings', title: 'Configuration', description: 'Configure rules, duration, and features' },
+  { key: 'review', title: 'Review', description: 'Review your configuration before deployment' },
+  { key: 'deploy', title: 'Deploy', description: 'Deploy your pool to the blockchain' }
 ]
 
 export default function CreatePage() {
   const { isAuthenticated, user } = useNetwork()
-  const { executeTransaction, transactionStatus, lastResult } = useFlowTransactions()
-  const [prompt, setPrompt] = useState('')
-  const [recipe, setRecipe] = useState<Recipe | null>(null)
-  const [loading, setLoading] = useState(false)
-  const [saved, setSaved] = useState(false)
+  const { executeTransaction } = useFlowTransactions()
   
-  // Metadata editing state
+  // Step management
+  const [currentStep, setCurrentStep] = useState<Step>('template')
+  const currentStepIndex = STEPS.findIndex(s => s.key === currentStep)
+  
+  // Template step state
+  const [prompt, setPrompt] = useState('')
+  const [isGenerating, setIsGenerating] = useState(false)
+  const [recipe, setRecipe] = useState<Recipe | null>(null)
+  
+  // Details step state  
   const [editedName, setEditedName] = useState('')
   const [editedDescription, setEditedDescription] = useState('')
-  const [bannerURL, setBannerURL] = useState('')
   const [selectedImage, setSelectedImage] = useState<File | null>(null)
   const [imageMetadata, setImageMetadata] = useState<ImageMetadata | null>(null)
   const [imageError, setImageError] = useState<string | null>(null)
+  const [bannerURL, setBannerURL] = useState('')
   
-  // Transaction state
-  const [creating, setCreating] = useState(false)
+  // Settings step state
+  const [duration, setDuration] = useState<number>(30)
+  const [targetAmount, setTargetAmount] = useState<number>(10000)
+  const [enableKyc, setEnableKyc] = useState(false)
+  const [kycThreshold, setKycThreshold] = useState<number>(1000)
+  
+  // Deploy step state
+  const [isCreating, setCreating] = useState(false)
   const [transactionId, setTransactionId] = useState<string | null>(null)
   const [vaultId, setVaultId] = useState<number | null>(null)
+  const [createdVault, setCreatedVault] = useState<Vault2 | null>(null)
 
   const generateRecipe = async () => {
     if (!prompt.trim()) return
 
-    setLoading(true)
+    setIsGenerating(true)
     try {
       const response = await fetch('/api/ai/recipe', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ prompt }),
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ prompt })
       })
 
-      if (!response.ok) {
-        throw new Error('Failed to generate recipe')
-      }
+      if (!response.ok) throw new Error('Failed to generate recipe')
 
       const data = await response.json()
-      setRecipe(data)
-      setEditedName(data.name)
-      setEditedDescription(`${data.template} template with ${data.widgets.join(', ')} widgets`)
-      setSaved(false)
+      setRecipe(data.recipe)
+      setEditedName(data.recipe.name)
+      setEditedDescription(`${data.recipe.template} template with ${data.recipe.widgets.join(', ')} widgets`)
+      setDuration(data.recipe.durationDays || 30)
+      setTargetAmount(data.recipe.targetAmount || 10000)
     } catch (error) {
       console.error('Error generating recipe:', error)
+      alert('Failed to generate recipe. Please try again.')
     } finally {
-      setLoading(false)
+      setIsGenerating(false)
     }
   }
 
   const handleImageSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
-    if (!file) return
+    if (!file) {
+      setSelectedImage(null)
+      setImageMetadata(null)
+      setImageError(null)
+      return
+    }
 
-    const error = validateImageFile(file)
-    if (error) {
-      setImageError(error)
+    const validationError = validateImageFile(file)
+    if (validationError) {
+      setImageError(validationError)
+      setSelectedImage(null)
+      setImageMetadata(null)
       return
     }
 
     setImageError(null)
     setSelectedImage(file)
-    
+
     try {
       const metadata = await processImageFile(file)
       setImageMetadata(metadata)
     } catch (error) {
       console.error('Error processing image:', error)
       setImageError('Failed to process image')
+      setImageMetadata(null)
     }
   }
 
   const createVaultOnChain = async () => {
     if (!recipe || !isAuthenticated || !user?.addr) {
-      alert('Please connect wallet and generate a recipe first')
+      alert('Please connect wallet and configure your pool first')
       return
     }
 
@@ -202,7 +203,7 @@ transaction(
         let rails = Vaults.Rails(acceptedIn: acceptedIn, payoutOut: payoutOut)
         
         // Create KYC if threshold provided
-        let kyc = kycThresholdUsd != nil ? Vaults.KYC(thresholdUsd: kycThresholdUsd) : nil
+        let kyc = kycThresholdUsd != nil ? Vaults.KYC(thresholdUsd: kycThresholdUsd!) : nil
         
         // Create vault kind enum
         let vaultKind = Vaults.VaultKind(rawValue: kind) ?? panic("Invalid vault kind")
@@ -238,7 +239,7 @@ transaction(
         { value: metadata.externalURL || null, type: 'Optional(String)' },
         { value: ['USDC'], type: 'Array(String)' },
         { value: ['USDC'], type: 'Array(String)' },
-        { value: null, type: 'Optional(UFix64)' },
+        { value: enableKyc ? kycThreshold.toString() : null, type: 'Optional(UFix64)' },
         { value: null, type: 'Optional(String)' }
       ]
 
@@ -248,353 +249,515 @@ transaction(
         setTransactionId(result.transactionId)
         // Extract vaultId from logs (this is a simplified approach)
         // In production, you'd parse the events properly
-        setVaultId(Date.now()) // Placeholder - would extract from events
-        setSaved(true)
+        const vaultIdFromLogs = Math.floor(Math.random() * 1000) + 1 // Mock for now
+        setVaultId(vaultIdFromLogs)
+        
+        setCreatedVault({
+          vaultId: vaultIdFromLogs,
+          org: user.addr,
+          name: metadata.name,
+          description: metadata.description,
+          kind: recipe.template,
+          status: 'Active',
+          createdAt: new Date().toISOString()
+        })
       } else {
         throw new Error(result.error || 'Transaction failed')
       }
     } catch (error) {
       console.error('Error creating vault:', error)
-      alert('Failed to create vault on-chain: ' + (error instanceof Error ? error.message : 'Unknown error'))
+      alert('Failed to create pool. Please try again.')
     } finally {
       setCreating(false)
     }
   }
 
-  const saveAsVault2 = () => {
-    if (!recipe) return
-
-    const description = `${recipe.template} template with ${recipe.widgets.join(', ')} widgets`
-    
-    const vault2: Vault2 = {
-      vaultId: 2,
-      org: DEMO_ORG_ADDRESS,
-      name: recipe.name,
-      description,
-      status: 'PayoutPlanned',
-      lastOperationId: 0,
-      totalPaid: '0.00',
-      winners: [],
-      misses: {},
+  const nextStep = () => {
+    if (currentStepIndex < STEPS.length - 1) {
+      setCurrentStep(STEPS[currentStepIndex + 1].key)
     }
-
-    localStorage.setItem('op_vault_2', JSON.stringify(vault2))
-    setSaved(true)
   }
 
-  return (
-    <main className="min-h-screen bg-[#0b1020] text-white safe-area-top">
-      <div className="mx-auto max-w-4xl space-y-6 px-4 sm:px-6 py-6 sm:py-10">
-        <FlowConnect />
+  const prevStep = () => {
+    if (currentStepIndex > 0) {
+      setCurrentStep(STEPS[currentStepIndex - 1].key)
+    }
+  }
 
-        <div className="relative">
-          <img src="/assets/omnipools_banner_inline.png" alt="OmniPools" className="w-full rounded-2xl" />
-          <div className="absolute inset-0 rounded-2xl bg-black/20" />
+  const canProceed = () => {
+    switch (currentStep) {
+      case 'template':
+        return recipe !== null
+      case 'details':
+        return editedName.trim() !== '' && editedDescription.trim() !== ''
+      case 'settings':
+        return duration > 0 && targetAmount > 0
+      case 'review':
+        return isAuthenticated
+      case 'deploy':
+        return false // Can't proceed from deploy
+      default:
+        return false
+    }
+  }
+
+  const renderStepIndicator = () => (
+    <div className="flex items-center justify-center mb-8">
+      {STEPS.map((step, index) => (
+        <div key={step.key} className="flex items-center">
+          <div className={`
+            w-10 h-10 rounded-full flex items-center justify-center text-sm font-medium
+            ${index <= currentStepIndex ? 'bg-blue-500 text-white' : 'bg-gray-600 text-gray-300'}
+          `}>
+            {index + 1}
+          </div>
+          <div className="ml-3 mr-6">
+            <div className={`text-sm font-medium ${index <= currentStepIndex ? 'text-white' : 'text-gray-400'}`}>
+              {step.title}
+            </div>
+            <div className="text-xs text-gray-400">{step.description}</div>
+          </div>
+          {index < STEPS.length - 1 && (
+            <div className={`w-8 h-0.5 ${index < currentStepIndex ? 'bg-blue-500' : 'bg-gray-600'}`} />
+          )}
+        </div>
+      ))}
+    </div>
+  )
+
+  const renderTemplateStep = () => (
+    <motion.div
+      initial={{ opacity: 0, x: 20 }}
+      animate={{ opacity: 1, x: 0 }}
+      exit={{ opacity: 0, x: -20 }}
+      className="space-y-6"
+    >
+      <div className="text-center mb-8">
+        <h2 className="text-3xl font-bold text-white mb-4">Choose Your Pool Template</h2>
+        <p className="text-gray-300">Describe what you want to create and we'll configure it for you</p>
+      </div>
+
+      <div className="space-y-4">
+        <div>
+          <label className="block text-lg font-semibold text-white mb-3">
+            Describe your pool
+          </label>
+          <textarea
+            value={prompt}
+            onChange={(e) => setPrompt(e.target.value)}
+            placeholder="e.g., Create a hackathon with $10k USDC prizes for 200 participants"
+            className="w-full h-32 rounded-2xl bg-white/5 border border-white/10 p-5 text-white placeholder-gray-400 resize-none"
+          />
         </div>
 
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-          <h1 className="text-2xl sm:text-3xl font-bold">Create New Pool</h1>
-          <div className="flex gap-2">
-            <Link href="/" className="rounded-xl bg-white/10 px-4 py-3 hover:bg-white/20 text-base font-medium min-h-[48px] flex items-center">
-              Home
-            </Link>
-            <Link href="/pools" className="rounded-xl bg-white/10 px-4 py-3 hover:bg-white/20 text-base font-medium min-h-[48px] flex items-center">
-              Pools
-            </Link>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+          {PRESET_PROMPTS.map((presetPrompt, index) => (
+            <button
+              key={index}
+              onClick={() => setPrompt(presetPrompt)}
+              className="p-4 rounded-xl bg-white/5 border border-white/10 text-left text-sm text-gray-300 hover:bg-white/10 transition-colors"
+            >
+              {presetPrompt}
+            </button>
+          ))}
+        </div>
+
+        <button
+          onClick={generateRecipe}
+          disabled={!prompt.trim() || isGenerating}
+          className="w-full bg-blue-500 hover:bg-blue-600 disabled:bg-gray-600 disabled:cursor-not-allowed text-white font-semibold py-4 px-6 rounded-2xl transition-colors"
+        >
+          {isGenerating ? 'Generating...' : 'Generate Pool Configuration'}
+        </button>
+      </div>
+
+      {recipe && (
+        <Card title="Generated Configuration">
+          <div className="space-y-3">
+            <div><span className="text-gray-400">Name:</span> <span className="text-white">{recipe.name}</span></div>
+            <div><span className="text-gray-400">Template:</span> <span className="text-white">{recipe.template}</span></div>
+            <div><span className="text-gray-400">Widgets:</span> <span className="text-white">{recipe.widgets.join(', ')}</span></div>
+            <div><span className="text-gray-400">Token:</span> <span className="text-white">{recipe.token}</span></div>
+            <div><span className="text-gray-400">Chain:</span> <span className="text-white">{recipe.chain}</span></div>
+            {recipe.durationDays && (
+              <div><span className="text-gray-400">Duration:</span> <span className="text-white">{recipe.durationDays} days</span></div>
+            )}
+            {recipe.targetAmount && (
+              <div><span className="text-gray-400">Target:</span> <span className="text-white">${recipe.targetAmount.toLocaleString()} {recipe.token}</span></div>
+            )}
+          </div>
+        </Card>
+      )}
+    </motion.div>
+  )
+
+  const renderDetailsStep = () => (
+    <motion.div
+      initial={{ opacity: 0, x: 20 }}
+      animate={{ opacity: 1, x: 0 }}
+      exit={{ opacity: 0, x: -20 }}
+      className="space-y-6"
+    >
+      <div className="text-center mb-8">
+        <h2 className="text-3xl font-bold text-white mb-4">Pool Details</h2>
+        <p className="text-gray-300">Customize your pool's name, description, and visual identity</p>
+      </div>
+
+      <div className="space-y-6">
+        <div>
+          <label className="block text-lg font-semibold text-white mb-3">Pool Name</label>
+          <input
+            type="text"
+            value={editedName}
+            onChange={(e) => setEditedName(e.target.value)}
+            className="w-full rounded-2xl bg-white/5 border border-white/10 p-5 text-white placeholder-gray-400"
+            placeholder="Enter pool name"
+          />
+        </div>
+
+        <div>
+          <label className="block text-lg font-semibold text-white mb-3">Description</label>
+          <textarea
+            value={editedDescription}
+            onChange={(e) => setEditedDescription(e.target.value)}
+            className="w-full h-32 rounded-2xl bg-white/5 border border-white/10 p-5 text-white placeholder-gray-400 resize-none"
+            placeholder="Describe your pool"
+          />
+        </div>
+
+        <div>
+          <label className="block text-lg font-semibold text-white mb-3">Pool Image (optional)</label>
+          <input
+            type="file"
+            accept="image/*"
+            onChange={handleImageSelect}
+            className="w-full rounded-2xl bg-white/5 border border-white/10 p-4 text-white file:mr-4 file:py-3 file:px-4 file:rounded-xl file:border-0 file:bg-blue-500 file:text-white hover:file:bg-blue-600 file:font-medium"
+          />
+          {imageError && (
+            <p className="text-red-400 text-sm mt-2">{imageError}</p>
+          )}
+          {imageMetadata && (
+            <div className="mt-2 p-3 rounded-lg bg-green-500/10 border border-green-500/20">
+              <p className="text-green-200 text-sm">
+                {imageMetadata.imageSVG ? 
+                  `✓ SVG will be stored on-chain (${Math.round(selectedImage!.size / 1024)}KB)` :
+                  `✓ Image processed successfully`
+                }
+              </p>
+            </div>
+          )}
+        </div>
+
+        <div>
+          <label className="block text-lg font-semibold text-white mb-3">Banner URL (optional)</label>
+          <input
+            type="url"
+            value={bannerURL}
+            onChange={(e) => setBannerURL(e.target.value)}
+            className="w-full rounded-2xl bg-white/5 border border-white/10 p-5 text-white placeholder-gray-400"
+            placeholder="https://example.com/banner.jpg"
+          />
+        </div>
+      </div>
+    </motion.div>
+  )
+
+  const renderSettingsStep = () => (
+    <motion.div
+      initial={{ opacity: 0, x: 20 }}
+      animate={{ opacity: 1, x: 0 }}
+      exit={{ opacity: 0, x: -20 }}
+      className="space-y-6"
+    >
+      <div className="text-center mb-8">
+        <h2 className="text-3xl font-bold text-white mb-4">Configuration</h2>
+        <p className="text-gray-300">Set up rules, duration, and advanced features</p>
+      </div>
+
+      <div className="space-y-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div>
+            <label className="block text-lg font-semibold text-white mb-3">Duration (days)</label>
+            <input
+              type="number"
+              value={duration}
+              onChange={(e) => setDuration(parseInt(e.target.value) || 0)}
+              min="1"
+              className="w-full rounded-2xl bg-white/5 border border-white/10 p-5 text-white"
+            />
+          </div>
+
+          <div>
+            <label className="block text-lg font-semibold text-white mb-3">Target Amount (USDC)</label>
+            <input
+              type="number"
+              value={targetAmount}
+              onChange={(e) => setTargetAmount(parseInt(e.target.value) || 0)}
+              min="1"
+              className="w-full rounded-2xl bg-white/5 border border-white/10 p-5 text-white"
+            />
           </div>
         </div>
 
-        <Card title="🤖 AI Recipe Generator">
-          <div className="space-y-6">
-            {/* Preset Prompts */}
+        <div className="space-y-4">
+          <div className="flex items-center space-x-3">
+            <input
+              type="checkbox"
+              id="enableKyc"
+              checked={enableKyc}
+              onChange={(e) => setEnableKyc(e.target.checked)}
+              className="w-5 h-5 rounded border-white/10 bg-white/5 text-blue-500 focus:ring-blue-500"
+            />
+            <label htmlFor="enableKyc" className="text-lg font-medium text-white">
+              Enable KYC Requirements
+            </label>
+          </div>
+
+          {enableKyc && (
+            <div className="ml-8">
+              <label className="block text-base font-medium text-white mb-2">KYC Threshold (USD)</label>
+              <input
+                type="number"
+                value={kycThreshold}
+                onChange={(e) => setKycThreshold(parseInt(e.target.value) || 0)}
+                min="1"
+                className="w-64 rounded-xl bg-white/5 border border-white/10 p-3 text-white"
+              />
+              <p className="text-sm text-gray-400 mt-1">
+                Participants with contributions above this amount will need KYC verification
+              </p>
+            </div>
+          )}
+        </div>
+
+        {recipe && (
+          <Card title="Selected Features">
+            <div className="space-y-2">
+              <div><span className="text-gray-400">Template:</span> <span className="text-white">{recipe.template}</span></div>
+              <div><span className="text-gray-400">Widgets:</span> <span className="text-white">{recipe.widgets.join(', ')}</span></div>
+              <div><span className="text-gray-400">Token:</span> <span className="text-white">{recipe.token} on {recipe.chain}</span></div>
+            </div>
+          </Card>
+        )}
+      </div>
+    </motion.div>
+  )
+
+  const renderReviewStep = () => (
+    <motion.div
+      initial={{ opacity: 0, x: 20 }}
+      animate={{ opacity: 1, x: 0 }}
+      exit={{ opacity: 0, x: -20 }}
+      className="space-y-6"
+    >
+      <div className="text-center mb-8">
+        <h2 className="text-3xl font-bold text-white mb-4">Review Configuration</h2>
+        <p className="text-gray-300">Review all settings before deploying your pool</p>
+      </div>
+
+      <Card title="Pool Summary">
+        <div className="space-y-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <h3 className="text-base sm:text-lg font-semibold text-white mb-3">
-                Quick Start Templates
-              </h3>
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-                {PRESET_PROMPTS.map((preset, index) => (
-                  <button
-                    key={index}
-                    onClick={() => setPrompt(preset.prompt)}
-                    className="text-left p-4 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 hover:border-white/20 transition-all group"
-                  >
-                    <div className="flex items-start gap-3">
-                      <span className="text-2xl flex-shrink-0">{preset.title.split(' ')[0]}</span>
-                      <div className="min-w-0 flex-1">
-                        <h4 className="font-semibold text-white group-hover:text-blue-200 transition-colors">
-                          {preset.title.slice(2)}
-                        </h4>
-                        <p className="text-sm text-white/60 mt-1">
-                          {preset.description}
-                        </p>
-                      </div>
-                    </div>
-                  </button>
+              <h4 className="text-lg font-semibold text-white mb-2">Basic Information</h4>
+              <div className="space-y-2 text-sm">
+                <div><span className="text-gray-400">Name:</span> <span className="text-white">{editedName}</span></div>
+                <div><span className="text-gray-400">Description:</span> <span className="text-white">{editedDescription}</span></div>
+                <div><span className="text-gray-400">Template:</span> <span className="text-white">{recipe?.template}</span></div>
+              </div>
+            </div>
+            
+            <div>
+              <h4 className="text-lg font-semibold text-white mb-2">Configuration</h4>
+              <div className="space-y-2 text-sm">
+                <div><span className="text-gray-400">Duration:</span> <span className="text-white">{duration} days</span></div>
+                <div><span className="text-gray-400">Target Amount:</span> <span className="text-white">${targetAmount.toLocaleString()} USDC</span></div>
+                <div><span className="text-gray-400">KYC:</span> <span className="text-white">{enableKyc ? `Enabled (threshold: $${kycThreshold})` : 'Disabled'}</span></div>
+              </div>
+            </div>
+          </div>
+
+          {recipe && (
+            <div>
+              <h4 className="text-lg font-semibold text-white mb-2">Features</h4>
+              <div className="flex flex-wrap gap-2">
+                {recipe.widgets.map((widget) => (
+                  <span key={widget} className="px-3 py-1 bg-blue-500/20 text-blue-200 rounded-full text-sm">
+                    {widget}
+                  </span>
                 ))}
               </div>
             </div>
+          )}
 
+          {(imageMetadata || bannerURL) && (
             <div>
-              <label htmlFor="prompt" className="block text-base sm:text-lg font-semibold text-white mb-3">
-                Or describe your own pool
-              </label>
-              <textarea
-                id="prompt"
-                value={prompt}
-                onChange={(e) => setPrompt(e.target.value)}
-                placeholder="e.g., A hackathon bounty for the best DeFi protocol with KYC verification and cross-chain transfers..."
-                className="w-full h-40 sm:h-32 rounded-2xl bg-white/5 border border-white/10 p-4 sm:p-6 text-base sm:text-lg text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50 transition-all"
-                rows={4}
-              />
+              <h4 className="text-lg font-semibold text-white mb-2">Visual Assets</h4>
+              <div className="space-y-2 text-sm">
+                {imageMetadata && (
+                  <div><span className="text-gray-400">Pool Image:</span> <span className="text-green-400">✓ Uploaded</span></div>
+                )}
+                {bannerURL && (
+                  <div><span className="text-gray-400">Banner URL:</span> <span className="text-white">{bannerURL}</span></div>
+                )}
+              </div>
             </div>
-            
+          )}
+        </div>
+      </Card>
+
+      {!isAuthenticated && (
+        <div className="rounded-2xl border border-amber-500/20 bg-amber-500/5 p-4 sm:p-6 lg:p-8 shadow-lg backdrop-blur-md">
+          <div className="flex items-center space-x-3">
+            <div className="text-amber-400">⚠️</div>
+            <div>
+              <h4 className="text-lg font-semibold text-amber-400">Wallet Connection Required</h4>
+              <p className="text-amber-200">Please connect your wallet to deploy the pool</p>
+            </div>
+          </div>
+          <div className="mt-4">
+            <FlowConnect />
+          </div>
+        </div>
+      )}
+    </motion.div>
+  )
+
+  const renderDeployStep = () => (
+    <motion.div
+      initial={{ opacity: 0, x: 20 }}
+      animate={{ opacity: 1, x: 0 }}
+      exit={{ opacity: 0, x: -20 }}
+      className="space-y-6"
+    >
+      <div className="text-center mb-8">
+        <h2 className="text-3xl font-bold text-white mb-4">Deploy Pool</h2>
+        <p className="text-gray-300">Deploy your pool to the Flow blockchain</p>
+      </div>
+
+      {!createdVault ? (
+        <Card title="Deploy Pool">
+          <div className="text-center space-y-6">
             <button
-              onClick={generateRecipe}
-              disabled={loading || !prompt.trim()}
-              className={`
-                w-full rounded-2xl px-6 py-4 sm:py-5 text-base sm:text-lg font-bold transition-all duration-200 min-h-[56px]
-                ${loading || !prompt.trim()
-                  ? 'bg-white/10 text-white/40 cursor-not-allowed'
-                  : 'bg-gradient-to-r from-blue-500 to-purple-500 text-white hover:from-blue-600 hover:to-purple-600 hover:scale-[1.02] active:scale-[0.98] shadow-lg'
-                }
-              `}
+              onClick={createVaultOnChain}
+              disabled={isCreating || !isAuthenticated}
+              className="w-full bg-blue-500 hover:bg-blue-600 disabled:bg-gray-600 disabled:cursor-not-allowed text-white font-semibold py-4 px-6 rounded-2xl transition-colors"
             >
-              {loading ? (
-                <span className="flex items-center justify-center gap-3">
-                  <div className="w-5 h-5 border-2 border-white/40 border-t-white rounded-full animate-spin"></div>
-                  Generating Recipe...
-                </span>
-              ) : (
-                '✨ Generate Recipe with AI'
-              )}
+              {isCreating ? 'Deploying Pool...' : 'Deploy Pool to Blockchain'}
             </button>
+
+            {isCreating && (
+              <div className="text-center">
+                <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>
+                <p className="mt-2 text-gray-300">Please confirm the transaction in your wallet...</p>
+              </div>
+            )}
+
+            {transactionId && (
+              <div className="p-4 bg-blue-500/10 border border-blue-500/20 rounded-xl">
+                <p className="text-blue-200 text-sm">
+                  Transaction ID: <code className="bg-black/20 px-2 py-1 rounded">{transactionId}</code>
+                </p>
+              </div>
+            )}
           </div>
         </Card>
+      ) : (
+        <div className="rounded-2xl border border-green-500/20 bg-green-500/5 p-4 sm:p-6 lg:p-8 shadow-lg backdrop-blur-md">
+          <div className="text-center space-y-6">
+            <div className="text-green-400 text-6xl">✅</div>
+            <div>
+              <h3 className="text-2xl font-bold text-green-400 mb-2">Pool Created Successfully!</h3>
+              <p className="text-green-200">Your pool has been deployed to the blockchain</p>
+            </div>
 
-        {recipe && (
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.3 }}
-          >
-            <Card title="Review & Create Pool">
-              <div className="space-y-6">
-                {/* Editable metadata form */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div className="space-y-4">
-                    <div>
-                      <label className="block text-base sm:text-lg font-semibold text-white mb-3">
-                        Pool Name
-                      </label>
-                      <input
-                        type="text"
-                        value={editedName}
-                        onChange={(e) => setEditedName(e.target.value)}
-                        className="w-full rounded-2xl bg-white/5 border border-white/10 p-4 sm:p-5 text-base sm:text-lg text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50 transition-all min-h-[56px]"
-                        placeholder="Enter pool name"
-                      />
-                    </div>
-                    
-                    <div>
-                      <label className="block text-base sm:text-lg font-semibold text-white mb-3">
-                        Description
-                      </label>
-                      <textarea
-                        value={editedDescription}
-                        onChange={(e) => setEditedDescription(e.target.value)}
-                        rows={4}
-                        className="w-full rounded-2xl bg-white/5 border border-white/10 p-4 sm:p-5 text-base sm:text-lg text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50 transition-all"
-                        placeholder="Enter description"
-                      />
-                    </div>
-                    
-                    <div>
-                      <label className="block text-base sm:text-lg font-semibold text-white mb-3">
-                        Banner URL (optional)
-                      </label>
-                      <input
-                        type="url"
-                        value={bannerURL}
-                        onChange={(e) => setBannerURL(e.target.value)}
-                        className="w-full rounded-2xl bg-white/5 border border-white/10 p-4 sm:p-5 text-base sm:text-lg text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50 transition-all min-h-[56px]"
-                        placeholder="https://example.com/banner.png"
-                      />
-                    </div>
-                  </div>
-                  
-                  <div className="space-y-4">
-                    <div>
-                      <label className="block text-base sm:text-lg font-semibold text-white mb-3">
-                        Pool Image (optional)
-                      </label>
-                      <input
-                        type="file"
-                        accept="image/*"
-                        onChange={handleImageSelect}
-                        className="w-full rounded-2xl bg-white/5 border border-white/10 p-4 sm:p-5 text-base text-white file:mr-4 file:py-3 file:px-4 file:rounded-xl file:border-0 file:text-base file:bg-blue-500 file:text-white hover:file:bg-blue-600 file:font-medium min-h-[56px]"
-                      />
-                      {imageError && (
-                        <p className="text-red-400 text-sm mt-1">{imageError}</p>
-                      )}
-                      {imageMetadata && (
-                        <div className="mt-2 p-3 rounded-lg bg-green-500/10 border border-green-500/20">
-                          <p className="text-green-200 text-sm">
-                            {imageMetadata.imageSVG ? 
-                              `✓ SVG will be stored on-chain (${Math.round(selectedImage!.size / 1024)}KB)` :
-                              `✓ Image hash: ${imageMetadata.imageHash?.slice(0, 16)}...`
-                            }
-                          </p>
-                        </div>
-                      )}
-                    </div>
-                    
-                    <div className="p-4 rounded-xl bg-white/5 border border-white/10">
-                      <h4 className="font-medium mb-3">Recipe Details</h4>
-                      <div className="space-y-2 text-sm">
-                        <div className="flex items-center gap-2">
-                          <span className="text-white/60">Template:</span>
-                          <span className="text-white/80">{recipe.template}</span>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <span className="text-white/60">Token:</span>
-                          <span className="rounded-full bg-green-500/20 px-2 py-1 text-xs text-green-200">
-                            {recipe.token}
-                          </span>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <span className="text-white/60">Chain:</span>
-                          <span className="rounded-full bg-blue-500/20 px-2 py-1 text-xs text-blue-200">
-                            {recipe.chain}
-                          </span>
-                        </div>
-                        {recipe.durationDays && (
-                          <div className="flex items-center gap-2">
-                            <span className="text-white/60">Duration:</span>
-                            <span className="text-white/80">{recipe.durationDays} days</span>
-                          </div>
-                        )}
-                        {recipe.targetAmount && (
-                          <div className="flex items-center gap-2">
-                            <span className="text-white/60">Target:</span>
-                            <span className="text-white/80">{recipe.targetAmount} USDC</span>
-                          </div>
-                        )}
-                      </div>
-                      
-                      <div className="mt-3">
-                        <span className="text-white/60 text-sm">Widgets:</span>
-                        <div className="flex flex-wrap gap-1 mt-1">
-                          {recipe.widgets.map((widget) => (
-                            <span
-                              key={widget}
-                              className="rounded-full bg-white/10 px-2 py-1 text-xs text-white/80"
-                            >
-                              {widget}
-                            </span>
-                          ))}
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
+            <div className="space-y-3 text-left">
+              <div><span className="text-gray-400">Pool ID:</span> <span className="text-white">{createdVault.vaultId}</span></div>
+              <div><span className="text-gray-400">Name:</span> <span className="text-white">{createdVault.name}</span></div>
+              <div><span className="text-gray-400">Status:</span> <span className="text-green-400">{createdVault.status}</span></div>
+              {transactionId && (
+                <div><span className="text-gray-400">Transaction:</span> <code className="text-white bg-black/20 px-2 py-1 rounded">{transactionId}</code></div>
+              )}
+            </div>
 
-
-
-                {/* Transaction status */}
-                {transactionId && (
-                  <motion.div
-                    initial={{ opacity: 0, scale: 0.95 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    className="p-4 rounded-xl bg-blue-500/10 border border-blue-500/20"
-                  >
-                    <p className="text-blue-200 text-sm">
-                      Transaction ID: <code className="bg-blue-500/20 px-2 py-1 rounded">{transactionId}</code>
-                    </p>
-                  </motion.div>
-                )}
-
-                {/* Action buttons - Mobile-first */}
-                <div className="space-y-3 sm:space-y-0 sm:flex sm:gap-3">
-                  {!isAuthenticated ? (
-                    <div className="text-white/60 text-base sm:text-lg p-4 rounded-xl bg-yellow-500/10 border border-yellow-500/20">
-                      <div className="flex items-center gap-2 mb-2">
-                        <span className="text-xl">⚠️</span>
-                        <span className="font-medium">Wallet Required</span>
-                      </div>
-                      Please connect your wallet to create a pool on-chain
-                    </div>
-                  ) : (
-                    <button
-                      onClick={createVaultOnChain}
-                      disabled={transactionStatus === 'pending' || saved || !editedName.trim()}
-                      className={`
-                        w-full sm:flex-1 rounded-2xl px-6 py-4 sm:py-5 text-base sm:text-lg font-bold transition-all duration-200 min-h-[56px]
-                        ${transactionStatus === 'pending'
-                          ? 'bg-blue-500/50 text-blue-200 cursor-not-allowed'
-                          : saved || transactionStatus === 'success'
-                          ? 'bg-green-500/20 text-green-200 cursor-not-allowed'
-                          : 'bg-gradient-to-r from-blue-500 to-blue-600 text-white hover:from-blue-600 hover:to-blue-700 hover:scale-[1.02] active:scale-[0.98] shadow-lg'
-                        }
-                      `}
-                    >
-                      {transactionStatus === 'pending' ? (
-                        <span className="flex items-center justify-center gap-3">
-                          <div className="w-5 h-5 border-2 border-blue-200 border-t-transparent rounded-full animate-spin"></div>
-                          Creating on Flow...
-                        </span>
-                      ) : saved || transactionStatus === 'success' ? (
-                        <span className="flex items-center justify-center gap-2">
-                          <span className="text-xl">✅</span>
-                          Pool Created!
-                        </span>
-                      ) : (
-                        <span className="flex items-center justify-center gap-2">
-                          <span className="text-xl">🚀</span>
-                          Create Pool on Flow
-                        </span>
-                      )}
-                    </button>
-                  )}
-                  
-                  <button
-                    onClick={saveAsVault2}
-                    disabled={saved}
-                    className={`
-                      w-full sm:w-auto rounded-2xl px-6 py-4 sm:py-5 text-base sm:text-lg font-bold transition-all duration-200 min-h-[56px]
-                      ${saved
-                        ? 'bg-green-500/20 text-green-200 cursor-not-allowed'
-                        : 'bg-gradient-to-r from-orange-500 to-orange-600 text-white hover:from-orange-600 hover:to-orange-700 hover:scale-[1.02] active:scale-[0.98]'
-                      }
-                    `}
-                  >
-                    {saved ? (
-                      <span className="flex items-center justify-center gap-2">
-                        <span className="text-xl">✅</span>
-                        Saved as Demo
-                      </span>
-                    ) : (
-                      <span className="flex items-center justify-center gap-2">
-                        <span className="text-xl">💾</span>
-                        Save as Demo
-                      </span>
-                    )}
-                  </button>
-                  
-                  {(saved || vaultId) && (
-                    <Link
-                      href="/pools"
-                      className="w-full sm:w-auto flex items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-purple-500 to-purple-600 px-6 py-4 sm:py-5 text-base sm:text-lg font-bold text-white hover:from-purple-600 hover:to-purple-700 transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] min-h-[56px]"
-                    >
-                      <span className="text-xl">🏊‍♂️</span>
-                      View Pools
-                    </Link>
-                  )}
-                </div>
-              </div>
-            </Card>
-          </motion.div>
-        )}
-      </div>
-    </main>
+            <div className="flex space-x-4">
+              <Link 
+                href={`/vault/${createdVault.vaultId}`}
+                className="flex-1 bg-blue-500 hover:bg-blue-600 text-white font-semibold py-3 px-6 rounded-xl transition-colors text-center"
+              >
+                View Pool
+              </Link>
+              <Link 
+                href="/pools"
+                className="flex-1 bg-gray-600 hover:bg-gray-700 text-white font-semibold py-3 px-6 rounded-xl transition-colors text-center"
+              >
+                Browse Pools
+              </Link>
+            </div>
+          </div>
+        </div>
+      )}
+    </motion.div>
   )
-} 
+
+  const renderCurrentStep = () => {
+    switch (currentStep) {
+      case 'template':
+        return renderTemplateStep()
+      case 'details':
+        return renderDetailsStep()
+      case 'settings':
+        return renderSettingsStep()
+      case 'review':
+        return renderReviewStep()
+      case 'deploy':
+        return renderDeployStep()
+      default:
+        return renderTemplateStep()
+    }
+  }
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-blue-900 to-gray-900">
+      <div className="container mx-auto px-4 py-8">
+        <div className="text-center mb-8">
+          <h1 className="text-4xl md:text-6xl font-bold text-white mb-4">
+            Create Pool
+          </h1>
+          <p className="text-xl text-gray-300">
+            Deploy your own liquidity pool or funding mechanism
+          </p>
+        </div>
+
+        {renderStepIndicator()}
+
+        <div className="max-w-4xl mx-auto">
+          <AnimatePresence mode="wait">
+            {renderCurrentStep()}
+          </AnimatePresence>
+
+          {/* Navigation */}
+          <div className="flex justify-between mt-8">
+            <button
+              onClick={prevStep}
+              disabled={currentStepIndex === 0}
+              className="px-6 py-3 bg-gray-600 hover:bg-gray-700 disabled:bg-gray-800 disabled:cursor-not-allowed text-white font-medium rounded-xl transition-colors"
+            >
+              Previous
+            </button>
+
+            {currentStep !== 'deploy' && (
+              <button
+                onClick={nextStep}
+                disabled={!canProceed()}
+                className="px-6 py-3 bg-blue-500 hover:bg-blue-600 disabled:bg-gray-600 disabled:cursor-not-allowed text-white font-medium rounded-xl transition-colors"
+              >
+                {currentStep === 'review' ? 'Deploy' : 'Next'}
+              </button>
+            )}
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}
