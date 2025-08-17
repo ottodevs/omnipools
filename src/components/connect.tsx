@@ -1,14 +1,12 @@
 'use client'
 
-import { Connect } from "@onflow/react-sdk"
+// This component was removed due to missing @onflow/react-sdk dependency
+// The project uses FlowConnect component instead for wallet connection
 
-function ConnectComponent() {
-    return (
-        <Connect
-          onConnect={() => console.log("Connected!")}
-          onDisconnect={() => console.log("Logged out")}
-        />
-    )
+export default function ConnectComponent() {
+  return (
+    <div>
+      <p>Connect component removed - use FlowConnect instead</p>
+    </div>
+  )
 }
-
-export default ConnectComponent

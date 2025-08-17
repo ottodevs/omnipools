@@ -1,22 +1,12 @@
 'use client'
 
-import { useFlowCurrentUser } from "@onflow/react-sdk"
+// This component was removed due to missing @onflow/react-sdk dependency
+// The project uses FlowConnect component instead for authentication
 
-function AuthComponent() {
-    const { user, authenticate, unauthenticate } = useFlowCurrentUser()
-  
-    return (
-      <div>
-        {user?.loggedIn ? (
-          <>
-            <p>Logged in as {user?.addr}</p>
-            <button onClick={unauthenticate}>Logout</button>
-          </>
-        ) : (
-          <button onClick={authenticate}>Login</button>
-        )}
-      </div>
-    )
-  }
-
-  export default AuthComponent
+export default function AuthComponent() {
+  return (
+    <div>
+      <p>Authentication component removed - use FlowConnect instead</p>
+    </div>
+  )
+}
