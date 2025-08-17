@@ -1,10 +1,10 @@
 # Production Deployment Guide
 
-This guide covers deploying TrustFlow to production with Flow testnet integration.
+This guide covers deploying OmniPools to production with Flow testnet integration.
 
 ## Overview
 
-TrustFlow is deployed as a production-ready application with:
+OmniPools is deployed as a production-ready application with:
 - **Flow Testnet**: Live blockchain integration with real transactions
 - **Vercel**: Edge-optimized hosting with global CDN
 - **PWA**: Installable mobile app with offline support
@@ -16,13 +16,13 @@ TrustFlow is deployed as a production-ready application with:
 
 All contracts successfully deployed to Flow testnet:
 
-| Contract | Address | Status | Purpose |
-|----------|---------|--------|---------|
-| **Registry** | `0x035662afa58bdc22` | ✅ Live | Organization management |
-| **Vaults** | `0x035662afa58bdc22` | ✅ Live | Pool creation and payouts |
-| **MockUSDC** | `0x035662afa58bdc22` | ✅ Live | Test token for payouts |
-| **DeFiActions** | `0x035662afa58bdc22` | ✅ Live | Flow Actions integration |
-| **FungibleTokenConnectors** | `0x035662afa58bdc22` | ✅ Live | Token bridging utilities |
+| Contract | Address | Status | Purpose | Live Contract |
+|----------|---------|--------|---------|---------------|
+| **Registry** | `0x035662afa58bdc22` | ✅ Live | Organization management | [View](https://testnet.flowscan.io/contract/A.035662afa58bdc22.Registry) |
+| **Vaults** | `0x035662afa58bdc22` | ✅ Live | Pool creation and payouts | [View](https://testnet.flowscan.io/contract/A.035662afa58bdc22.Vaults) |
+| **MockUSDC** | `0x035662afa58bdc22` | ✅ Live | Test token for payouts | [View](https://testnet.flowscan.io/contract/A.035662afa58bdc22.MockUSDC) |
+| **DeFiActions** | `0x035662afa58bdc22` | ✅ Live | Flow Actions integration | [View](https://testnet.flowscan.io/contract/A.035662afa58bdc22.DeFiActions) |
+| **FungibleTokenConnectors** | `0x035662afa58bdc22` | ✅ Live | Token bridging utilities | [View](https://testnet.flowscan.io/contract/A.035662afa58bdc22.FungibleTokenConnectors) |
 
 ### Standard Flow Contracts
 
@@ -64,7 +64,7 @@ flow project deploy --network testnet
 #### 3. Contract Initialization
 ```bash
 # Create demo organization
-flow transactions send cadence/transactions/tx_create_org.cdc "TrustFlow Demo" \
+flow transactions send cadence/transactions/tx_create_org.cdc "OmniPools Demo" \
   --network testnet --signer deployer
 # → Tx: e9e0cf50019cbb4d93138ef3f90e9820c88d08031d4916fa625d21836c850c02
 
@@ -90,7 +90,7 @@ flow transactions send cadence/transactions/tx_mint_or_fund_usdc.cdc \
 flow transactions send cadence/transactions/tx_create_vault.cdc \
   --args-json '[
     {"type": "Address", "value": "0x035662afa58bdc22"},
-    {"type": "String", "value": "ETHGlobal NY Production Test"},
+    {"type": "String", "value": "Demo Production Test"},
     {"type": "UInt8", "value": "0"},
     {"type": "String", "value": "Production testnet vault for demo"},
     {"type": "Optional", "value": null},
@@ -220,7 +220,7 @@ All operations verified on Flow testnet:
 ### Demo Vault Status
 - **Vault ID**: 1
 - **Organization**: 0x035662afa58bdc22  
-- **Name**: "ETHGlobal NY Production Test"
+- **Name**: "Demo Production Test"
 - **Status**: Active
 - **USDC Available**: 5,000 USDC for payouts
 - **Block Explorer**: [View Account](https://testnet.flowscan.io/account/035662afa58bdc22)
@@ -255,4 +255,4 @@ All operations verified on Flow testnet:
 
 **Status**: 🟢 Production Ready  
 **Last Updated**: January 17, 2025  
-**Deployment**: [trustflow-omnipools.vercel.app](https://trustflow-omnipools.vercel.app)
+**Production Ready**: Live Flow testnet deployment

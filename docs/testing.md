@@ -1,10 +1,10 @@
 # Testing & Verification Guide
 
-This document covers all testing procedures for TrustFlow, from local development to production verification on Flow testnet.
+This document covers all testing procedures for OmniPools, from local development to production verification on Flow testnet.
 
 ## Testing Strategy
 
-TrustFlow employs a comprehensive testing strategy:
+OmniPools employs a comprehensive testing strategy:
 
 1. **Unit Tests**: Individual contract function testing
 2. **Integration Tests**: End-to-end Flow blockchain interaction
@@ -176,7 +176,7 @@ transaction() {
 
 ### Demo Vaults (Testnet)
 
-#### Vault 1: ETHGlobal NY Production Test
+#### Vault 1: Demo Production Test
 - **ID**: 1
 - **Organization**: 0x035662afa58bdc22
 - **Status**: Active
@@ -258,7 +258,7 @@ flow scripts execute cadence/tests/test_resource_safety.cdc --network testnet
 ### CI/CD Pipeline
 ```yaml
 # .github/workflows/test.yml
-name: TrustFlow Testing
+name: OmniPools Testing
 on: [push, pull_request]
 
 jobs:

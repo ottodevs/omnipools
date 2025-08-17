@@ -1,12 +1,28 @@
-# Documentation
+# OmniPools Documentation
 
-## Getting Started
+This directory contains comprehensive documentation for OmniPools, covering architecture, integrations, and deployment.
 
-- **[Setup Guide](setup.md)** - Environment and development setup
-- **[Architecture](architecture.md)** - System design and Flow Actions  
-- **[API Reference](runbook.md)** - Commands and scripts
+## Core Documentation
 
-## Development
+- **[Architecture](architecture.md)** - System design and component overview
+- **[Setup](setup.md)** - Local development environment setup
 
-- **[Flow Actions](actions.md)** - Understanding weak guarantees
-- **[Demo Runbook](runbook.md)** - Step-by-step commands 
+## Integration Guides
+
+- **[Flow Integration](flow-integration.md)** - Flow blockchain implementation details
+- **[Flow Actions](flow-actions.md)** - Atomic payout system architecture  
+- **[Fern Integration](fern-integration.md)** - Global payments API integration
+
+## Operations
+
+- **[Deployment](deployment.md)** - Production deployment guide
+- **[Testing](testing.md)** - Testing procedures and verification
+- **[Runbook](runbook.md)** - Commands and operational procedures
+
+## Flow Blockchain
+
+- **[Flow Showcase](flow-showcase.md)** - Flow ecosystem features and capabilities
+
+---
+
+For quick start, see the main [README](../README.md).

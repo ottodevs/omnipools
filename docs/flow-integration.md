@@ -1,10 +1,10 @@
 # Flow Blockchain Integration
 
-TrustFlow leverages Flow blockchain's unique capabilities to provide atomic, audit-ready payouts for events. This document details our Flow integration, contract architecture, and deployment strategy.
+OmniPools leverages Flow blockchain's unique capabilities to provide atomic, audit-ready payouts for events. This document details our Flow integration, contract architecture, and deployment strategy.
 
 ## Why Flow?
 
-Flow was chosen for TrustFlow because of its:
+Flow was chosen for OmniPools because of its:
 
 - **Resource-Oriented Programming**: Cadence's resource system ensures digital assets can't be duplicated or lost
 - **Built-in Account Abstraction**: Native account linking and hybrid custody for seamless UX
@@ -35,6 +35,7 @@ Flow was chosen for TrustFlow because of its:
 **Purpose**: Organization and vault registry
 **Location**: `cadence/contracts/Registry.cdc`
 **Address**: `0x035662afa58bdc22` (Testnet)
+**Live Contract**: https://testnet.flowscan.io/contract/A.035662afa58bdc22.Registry
 
 ```cadence
 // Key functions
@@ -46,6 +47,7 @@ access(all) fun getOrgInfo(orgAddr: Address): OrgInfo?
 **Purpose**: Core vault management and payout logic
 **Location**: `cadence/contracts/Vaults.cdc`
 **Address**: `0x035662afa58bdc22` (Testnet)
+**Live Contract**: https://testnet.flowscan.io/contract/A.035662afa58bdc22.Vaults
 
 ```cadence
 // Key resources
@@ -67,6 +69,7 @@ access(all) resource VaultCollection {
 **Purpose**: USDC token implementation for testing
 **Location**: `cadence/contracts/MockUSDC.cdc`  
 **Address**: `0x035662afa58bdc22` (Testnet)
+**Live Contract**: https://testnet.flowscan.io/contract/A.035662afa58bdc22.MockUSDC
 
 ```cadence
 // Cadence 1.0 compliant FungibleToken implementation
@@ -82,6 +85,7 @@ access(all) resource Vault: FungibleToken.Vault {
 **Purpose**: Flow Actions integration for cross-chain operations
 **Location**: `cadence/vendor/DeFiActions.cdc`
 **Address**: `0x035662afa58bdc22` (Testnet)
+**Live Contract**: https://testnet.flowscan.io/contract/A.035662afa58bdc22.DeFiActions
 
 ```cadence
 // Atomic transfer operations
@@ -94,7 +98,7 @@ access(all) fun executeTransfer(
 
 ## Flow Actions Integration
 
-Flow Actions enables cross-chain DeFi operations directly from Cadence smart contracts. TrustFlow uses this for:
+Flow Actions enables cross-chain DeFi operations directly from Cadence smart contracts. OmniPools uses this for:
 
 ### Automated Payouts
 ```cadence
@@ -150,7 +154,7 @@ flow accounts get 035662afa58bdc22 --network testnet
 #### 3. Initialization
 ```bash
 # Create organization
-flow transactions send cadence/transactions/tx_create_org.cdc "TrustFlow Demo" \
+flow transactions send cadence/transactions/tx_create_org.cdc "OmniPools Demo" \
   --network testnet --signer deployer
 
 # Setup USDC infrastructure  
@@ -201,7 +205,7 @@ flow scripts execute cadence/scripts/sc_get_winner_balance.cdc 0x035662afa58bdc2
 ```
 
 ### Live Demo Results
-✅ **Vault Created**: ID 1, "ETHGlobal NY Production Test"  
+✅ **Vault Created**: ID 1, "Demo Production Test"  
 ✅ **USDC Minted**: 5,000 USDC available for payouts  
 ✅ **Organization Setup**: Registry initialized  
 ✅ **Capabilities Linked**: Receiver and provider capabilities configured  

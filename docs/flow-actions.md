@@ -1,6 +1,6 @@
 # Flow Actions Integration
 
-TrustFlow leverages Flow Actions to provide atomic, cross-chain payout capabilities. This document details how Flow Actions enables our "weak guarantees" payout system.
+OmniPools leverages Flow Actions to provide atomic, cross-chain payout capabilities. This document details how Flow Actions enables our "weak guarantees" payout system.
 
 ## What are Flow Actions?
 
@@ -10,11 +10,11 @@ Flow Actions is a DeFi infrastructure layer that enables:
 - **Composable DeFi** with standardized action interfaces
 - **Institutional-grade** reliability and audit trails
 
-## TrustFlow Implementation
+## OmniPools Implementation
 
 ### Weak Guarantees Pattern
 
-Traditional payout systems fail completely if any recipient has issues. TrustFlow implements "weak guarantees" where:
+Traditional payout systems fail completely if any recipient has issues. OmniPools implements "weak guarantees" where:
 
 ✅ **Successful recipients get paid**  
 ⚠️ **Failed recipients are recorded as "misses"**  
@@ -270,9 +270,9 @@ bun test flow-actions.test.ts
 
 ## Benefits for Event Organizers
 
-### Traditional Payouts vs TrustFlow
+### Traditional Payouts vs OmniPools
 
-| Traditional | TrustFlow + Flow Actions |
+| Traditional | OmniPools + Flow Actions |
 |-------------|--------------------------|
 | Manual bank transfers | Automated blockchain payouts |
 | 3-5 day settlement | Instant settlement |

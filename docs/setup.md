@@ -23,7 +23,7 @@ NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID=your_project_id
 
 ### Full Demo
 ```bash
-bun run judge        # Emulator + demo + UI
+bun run demo        # Emulator + demo + UI
 ```
 
 ### Step by Step

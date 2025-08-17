@@ -1,6 +1,6 @@
-# TrustFlow: Flow Blockchain Showcase
+# OmniPools: Flow Blockchain Showcase
 
-This document highlights how TrustFlow leverages Flow blockchain's unique capabilities to create a next-generation payout platform.
+This document highlights how OmniPools leverages Flow blockchain's unique capabilities to create a next-generation payout platform.
 
 ## 🌟 Flow Integration Highlights
 
@@ -48,7 +48,7 @@ prepare(signer: auth(Storage, Capabilities) &Account) {
 
 ### Atomic Multi-Recipient Payouts
 
-TrustFlow uses Flow Actions to enable atomic payouts that either succeed completely or fail gracefully:
+OmniPools uses Flow Actions to enable atomic payouts that either succeed completely or fail gracefully:
 
 ```cadence
 /// Execute payout using Flow Actions
@@ -84,7 +84,7 @@ access(all) fun executePayout(vaultId: UInt64) {
 
 ### Weak Guarantees Pattern
 
-**Innovation**: Unlike traditional all-or-nothing systems, TrustFlow implements "weak guarantees":
+**Innovation**: Unlike traditional all-or-nothing systems, OmniPools implements "weak guarantees":
 
 - ✅ **Partial Success**: Some recipients can be paid even if others fail
 - 📝 **Miss Recording**: Failed payments logged for manual retry
@@ -95,7 +95,7 @@ access(all) fun executePayout(vaultId: UInt64) {
 
 ### MetadataViews Integration
 
-TrustFlow implements Flow's MetadataViews standard for rich on-chain metadata:
+OmniPools implements Flow's MetadataViews standard for rich on-chain metadata:
 
 ```cadence
 /// Standard metadata views for vault discovery
@@ -219,7 +219,7 @@ access(all) fun testVaultCreation() {
 ### Current: Flow Native
 ```
 ┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
-│   TrustFlow     │    │  Flow Actions   │    │ Flow Testnet    │
+│   OmniPools     │    │  Flow Actions   │    │ Flow Testnet    │
 │   Frontend      │────│   DeFi Layer    │────│   Blockchain    │
 └─────────────────┘    └─────────────────┘    └─────────────────┘
          │                       │                       │
@@ -232,7 +232,7 @@ access(all) fun testVaultCreation() {
 ### Future: Omnichain
 ```
 ┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
-│   TrustFlow     │    │  Flow Actions   │    │ Flow Blockchain │
+│   OmniPools     │    │  Flow Actions   │    │ Flow Blockchain │
 │   Frontend      │────│   Hub           │────│   (Primary)     │
 └─────────────────┘    └─────────────────┘    └─────────────────┘
                                 │                       │
@@ -289,7 +289,7 @@ access(all) fun testVaultCreation() {
 ## 🎯 Innovation Showcase
 
 ### AI + Blockchain Convergence
-TrustFlow demonstrates the powerful combination of AI and blockchain:
+OmniPools demonstrates the powerful combination of AI and blockchain:
 
 1. **AI Generates Pool Logic** → Natural language to smart contract parameters
 2. **Blockchain Executes Atomically** → Immutable, auditable operations
@@ -297,7 +297,7 @@ TrustFlow demonstrates the powerful combination of AI and blockchain:
 4. **Real-time Verification** → Instant feedback with block explorer links
 
 ### Weak Guarantees Innovation
-Traditional blockchain applications are "all-or-nothing". TrustFlow pioneers "weak guarantees":
+Traditional blockchain applications are "all-or-nothing". OmniPools pioneers "weak guarantees":
 
 - **Partial Success**: Pay who you can, record who you can't
 - **Retry Logic**: Failed payments don't block the system
@@ -318,7 +318,7 @@ Traditional blockchain applications are "all-or-nothing". TrustFlow pioneers "we
 - **USDC Balance**: [5,000 Available](https://testnet.flowscan.io/tx/a8875ed75455d50f552b5f80adc6da8f7a29622598bdb9f3112fa53225eb07f7)
 
 ### Application Demo  
-- **Live App**: [trustflow-omnipools.vercel.app](https://trustflow-omnipools.vercel.app)
+- **Production Ready**: Deployed on Flow Testnet with live contracts
 - **Mobile PWA**: Add to home screen for app experience
 - **Testnet Ready**: Connect Flow wallet and create real pools
 
@@ -344,6 +344,5 @@ Traditional blockchain applications are "all-or-nothing". TrustFlow pioneers "we
 
 ---
 
-**🎯 Judge Evaluation**: [60-Second Demo Path](../JUDGE_FLOW.md)  
-**📱 Live Demo**: [trustflow-omnipools.vercel.app](https://trustflow-omnipools.vercel.app)  
+**📱 Production Ready**: Deployed with live Flow contracts  
 **🔍 Testnet**: [View Contracts](https://testnet.flowscan.io/account/035662afa58bdc22)

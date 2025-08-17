@@ -20,7 +20,7 @@ flow deploy
 ### 2. Setup Demo Environment
 ```bash
 # Create vault
-flow transactions send ./cadence/transactions/tx_create_vault.cdc --args-json '[{"type": "Address", "value": "0xf8d6e0586b0a20c7"}, {"type": "String", "value": "ETHGlobal NY Bounties"}, {"type": "UInt8", "value": "0"}, {"type": "String", "value": "Top bounties paid via Flow Actions."}, {"type": "Optional", "value": null}, {"type": "Optional", "value": null}, {"type": "Optional", "value": null}, {"type": "Array", "value": [{"type": "String", "value": "usdc:flow"}]}, {"type": "Array", "value": [{"type": "String", "value": "usdc:flow"}]}, {"type": "Optional", "value": null}, {"type": "Optional", "value": null}]'
+flow transactions send ./cadence/transactions/tx_create_vault.cdc --args-json '[{"type": "Address", "value": "0xf8d6e0586b0a20c7"}, {"type": "String", "value": "Demo Bounties Pool"}, {"type": "UInt8", "value": "0"}, {"type": "String", "value": "Top bounties paid via Flow Actions."}, {"type": "Optional", "value": null}, {"type": "Optional", "value": null}, {"type": "Optional", "value": null}, {"type": "Array", "value": [{"type": "String", "value": "usdc:flow"}]}, {"type": "Array", "value": [{"type": "String", "value": "usdc:flow"}]}, {"type": "Optional", "value": null}, {"type": "Optional", "value": null}]'
 
 # Link USDC receiver
 flow transactions send ./cadence/transactions/tx_link_usdc_receiver.cdc
@@ -93,10 +93,10 @@ Values:
 
 ## UI Prototype
 
-### One-Command Judge Flow
+### One-Command Demo
 ```bash
 # Start emulator, run demo, refresh UI, and serve app
-bun run judge
+bun run demo
 ```
 
 ### Manual UI Refresh
