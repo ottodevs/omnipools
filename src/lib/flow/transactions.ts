@@ -93,9 +93,9 @@ transaction(
       arg(null, t.Optional(t.UFix64)),
       arg(null, t.Optional(t.String))
     ],
-    proposer: fcl.authz,
-    payer: fcl.authz,
-    authorizations: [fcl.authz],
+    proposer: fcl.currentUser,
+    payer: fcl.currentUser,
+    authorizations: [fcl.currentUser],
     limit: 1000
   })
 
@@ -136,9 +136,9 @@ transaction {
   const transactionId = await fcl.mutate({
     cadence: code,
     args: (arg, t) => [],
-    proposer: fcl.authz,
-    payer: fcl.authz,
-    authorizations: [fcl.authz],
+    proposer: fcl.currentUser,
+    payer: fcl.currentUser,
+    authorizations: [fcl.currentUser],
     limit: 1000
   })
 
@@ -195,9 +195,9 @@ transaction(vaultId: UInt64, winners: [{String: UFix64}]) {
       arg(vaultId, t.UInt64),
       arg(winnersArray, t.Array(t.Dictionary({ key: t.String, value: t.UFix64 })))
     ],
-    proposer: fcl.authz,
-    payer: fcl.authz,
-    authorizations: [fcl.authz],
+    proposer: fcl.currentUser,
+    payer: fcl.currentUser,
+    authorizations: [fcl.currentUser],
     limit: 1000
   })
 
@@ -273,9 +273,9 @@ transaction(vaultId: UInt64, orgAddr: Address) {
       arg(vaultId, t.UInt64),
       arg(orgAddress, t.Address)
     ],
-    proposer: fcl.authz,
-    payer: fcl.authz,
-    authorizations: [fcl.authz],
+    proposer: fcl.currentUser,
+    payer: fcl.currentUser,
+    authorizations: [fcl.currentUser],
     limit: 1000
   })
 
