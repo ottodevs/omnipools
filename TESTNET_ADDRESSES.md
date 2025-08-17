@@ -1,6 +1,6 @@
 # Flow Testnet Contract Addresses
 
-This document contains the contract addresses needed for TrustFlow to work on Flow testnet.
+This document contains the contract addresses needed for OmniPools to work on Flow testnet.
 
 ## Standard Contracts (Already Deployed)
 
