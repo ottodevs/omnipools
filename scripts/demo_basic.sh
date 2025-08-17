@@ -15,7 +15,7 @@ flow transactions send ./cadence/transactions/tx_create_org.cdc "OmniPool Labs" 
 
 echo ">> Creating Vault"
 flow transactions send ./cadence/transactions/tx_create_vault.cdc $ORG \
-"{\"name\":\"ETHGlobal NY Bounties\",\"kind\":0,\"description\":\"Top bounties paid via Flow Actions.\",\"bannerCID\":\"ipfs://bafy-demo-banner\",\"logoCID\":\"ipfs://bafy-demo-logo\",\"externalURL\":\"https://demo.omnipool.app\",\"rails\":{\"acceptedIn\":[\"usdc:flow\"],\"payoutOut\":[\"usdc:flow\"]},\"kyc\":{\"thresholdUsd\":1000.0},\"strategyHint\":\"idle\"}"
+"{\"name\":\"Demo Bounties Pool\",\"kind\":0,\"description\":\"Top bounties paid via Flow Actions.\",\"bannerCID\":\"ipfs://bafy-demo-banner\",\"logoCID\":\"ipfs://bafy-demo-logo\",\"externalURL\":\"https://omnipools.app\",\"rails\":{\"acceptedIn\":[\"usdc:flow\"],\"payoutOut\":[\"usdc:flow\"]},\"kyc\":{\"thresholdUsd\":1000.0},\"strategyHint\":\"idle\"}"
 
 echo ">> Adding participants"
 flow transactions send ./cadence/transactions/tx_add_participant.cdc $ORG $VAULT_ID $WIN_A "{\"team\":\"TeamAlpha\"}"

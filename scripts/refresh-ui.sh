@@ -25,7 +25,7 @@ cat > "$PUB/vault-1.json" <<'JSON'
 {
   "vaultId": 1,
   "org": "0xf8d6e0586b0a20c7",
-  "name": "ETHGlobal NY Bounties",
+  "name": "Demo Bounties Pool",
   "description": "Top bounties paid via Flow Actions.",
   "status": "Paid",
   "lastOperationId": 1,
