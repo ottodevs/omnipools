@@ -92,6 +92,7 @@ export function initializeFlowConfig(network: NetworkType) {
       : {
           // Fallback configuration without WalletConnect
           'discovery.wallet.method': 'IFRAME/RPC',
+          'discovery.authn.endpoint': networkConfig.discovery,
         }),
   }
 

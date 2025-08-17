@@ -8,6 +8,7 @@ import { DEMO_ORG_ADDRESS } from '@/lib/constants/vault'
 import { useNetwork } from '@/lib/contexts/network-context'
 import { processImageFile, validateImageFile, ImageMetadata } from '@/lib/utils/image-utils'
 import { createVaultTransaction, waitForTransaction } from '@/lib/flow/transactions'
+import { useFlowTransactions } from '@/hooks/use-flow-transactions'
 import FernCurrencyConverter from '@/components/fern-currency-converter'
 import { motion } from 'framer-motion'
 
@@ -73,6 +74,7 @@ const PRESET_PROMPTS = [
 
 export default function CreatePage() {
   const { isAuthenticated, user } = useNetwork()
+  const { executeTransaction, transactionStatus, lastResult } = useFlowTransactions()
   const [prompt, setPrompt] = useState('')
   const [recipe, setRecipe] = useState<Recipe | null>(null)
   const [loading, setLoading] = useState(false)
@@ -161,23 +163,99 @@ export default function CreatePage() {
         image: imageMetadata || undefined
       }
 
-      const txId = await createVaultTransaction(user.addr, metadata)
-      setTransactionId(txId)
+      // Use the hook's executeTransaction method which properly handles wallet popup
+      const code = `
+import Registry from 0xRegistry
+import Vaults from 0xVaults
+
+transaction(
+    orgAddr: Address,
+    name: String,
+    kind: UInt8,
+    description: String,
+    bannerCID: String?,
+    logoCID: String?,
+    externalURL: String?,
+    acceptedIn: [String],
+    payoutOut: [String],
+    kycThresholdUsd: UFix64?,
+    strategyHint: String?
+) {
+    let orgAccount: &Account
+    let vaultCollection: &Vaults.VaultCollection
+    
+    prepare(signer: auth(Storage, Capabilities) &Account) {
+        // Get org account
+        self.orgAccount = getAccount(orgAddr)
+        
+        // Setup vault collection for org if not exists
+        Vaults.setupVaultCollection(account: signer)
+        
+        // Borrow vault collection
+        self.vaultCollection = signer.storage.borrow<&Vaults.VaultCollection>(
+            from: Vaults.VaultCollectionStoragePath
+        ) ?? panic("Could not borrow vault collection")
+    }
+    
+    execute {
+        // Create rails
+        let rails = Vaults.Rails(acceptedIn: acceptedIn, payoutOut: payoutOut)
+        
+        // Create KYC if threshold provided
+        let kyc = kycThresholdUsd != nil ? Vaults.KYC(thresholdUsd: kycThresholdUsd) : nil
+        
+        // Create vault kind enum
+        let vaultKind = Vaults.VaultKind(rawValue: kind) ?? panic("Invalid vault kind")
+        
+        // Create vault init struct
+        let vaultInit = Vaults.VaultInit(
+            name: name,
+            kind: vaultKind,
+            description: description,
+            bannerCID: bannerCID,
+            logoCID: logoCID,
+            externalURL: externalURL,
+            rails: rails,
+            kyc: kyc,
+            strategyHint: strategyHint
+        )
+        
+        // Create vault
+        let vaultId = self.vaultCollection.createVault(vaultInit: vaultInit)
+        
+        log("Vault created with ID: ".concat(vaultId.toString()))
+    }
+}
+      `
+
+      const args = [
+        { value: user.addr, type: 'Address' },
+        { value: metadata.name, type: 'String' },
+        { value: 0, type: 'UInt8' }, // vault kind
+        { value: metadata.description, type: 'String' },
+        { value: metadata.bannerURL || null, type: 'Optional(String)' },
+        { value: metadata.image?.imageSVG || metadata.image?.imageURL || null, type: 'Optional(String)' },
+        { value: metadata.externalURL || null, type: 'Optional(String)' },
+        { value: ['USDC'], type: 'Array(String)' },
+        { value: ['USDC'], type: 'Array(String)' },
+        { value: null, type: 'Optional(UFix64)' },
+        { value: null, type: 'Optional(String)' }
+      ]
+
+      const result = await executeTransaction(code, args)
       
-      // Wait for transaction to be sealed
-      const result = await waitForTransaction(txId)
-      
-      if (result.status === 4) { // SEALED
+      if (result.status === 'success' && result.transactionId) {
+        setTransactionId(result.transactionId)
         // Extract vaultId from logs (this is a simplified approach)
         // In production, you'd parse the events properly
         setVaultId(Date.now()) // Placeholder - would extract from events
         setSaved(true)
       } else {
-        throw new Error('Transaction failed')
+        throw new Error(result.error || 'Transaction failed')
       }
     } catch (error) {
       console.error('Error creating vault:', error)
-      alert('Failed to create vault on-chain')
+      alert('Failed to create vault on-chain: ' + (error instanceof Error ? error.message : 'Unknown error'))
     } finally {
       setCreating(false)
     }
@@ -465,23 +543,23 @@ export default function CreatePage() {
                   ) : (
                     <button
                       onClick={createVaultOnChain}
-                      disabled={creating || saved || !editedName.trim()}
+                      disabled={transactionStatus === 'pending' || saved || !editedName.trim()}
                       className={`
                         w-full sm:flex-1 rounded-2xl px-6 py-4 sm:py-5 text-base sm:text-lg font-bold transition-all duration-200 min-h-[56px]
-                        ${creating
+                        ${transactionStatus === 'pending'
                           ? 'bg-blue-500/50 text-blue-200 cursor-not-allowed'
-                          : saved
+                          : saved || transactionStatus === 'success'
                           ? 'bg-green-500/20 text-green-200 cursor-not-allowed'
                           : 'bg-gradient-to-r from-blue-500 to-blue-600 text-white hover:from-blue-600 hover:to-blue-700 hover:scale-[1.02] active:scale-[0.98] shadow-lg'
                         }
                       `}
                     >
-                      {creating ? (
+                      {transactionStatus === 'pending' ? (
                         <span className="flex items-center justify-center gap-3">
                           <div className="w-5 h-5 border-2 border-blue-200 border-t-transparent rounded-full animate-spin"></div>
                           Creating on Flow...
                         </span>
-                      ) : saved ? (
+                      ) : saved || transactionStatus === 'success' ? (
                         <span className="flex items-center justify-center gap-2">
                           <span className="text-xl">✅</span>
                           Pool Created!

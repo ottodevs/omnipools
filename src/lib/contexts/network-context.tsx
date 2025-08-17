@@ -86,7 +86,10 @@ export function NetworkProvider({ children }: { children: ReactNode }) {
   const authenticate = async () => {
     try {
       console.log('🔐 Starting authentication for network:', currentNetwork)
-      console.log('🔧 Current FCL config:', await fcl.config().get('discovery.wallet'))
+      console.log('🔧 Current FCL config:')
+      console.log('  - Access Node:', await fcl.config().get('accessNode.api'))
+      console.log('  - Discovery Wallet:', await fcl.config().get('discovery.wallet'))
+      console.log('  - Flow Network:', await fcl.config().get('flow.network'))
       
       // Clear any existing authentication first
       await fcl.unauthenticate()
@@ -95,6 +98,7 @@ export function NetworkProvider({ children }: { children: ReactNode }) {
       await new Promise(resolve => setTimeout(resolve, 100))
       
       // Start authentication
+      console.log('🚀 Calling fcl.authenticate()...')
       await fcl.authenticate()
       console.log('✅ Authentication successful')
     } catch (error) {
@@ -107,7 +111,8 @@ export function NetworkProvider({ children }: { children: ReactNode }) {
       } else if (errorMessage?.includes('locked')) {
         alert('Please unlock your Flow wallet and try again')
       } else {
-        alert('Wallet connection failed. Please try switching to local network or check your wallet.')
+        console.error('Full error details:', error)
+        alert('Wallet connection failed. Please try switching to local network or check your wallet. Check browser console for details.')
       }
     }
   }
