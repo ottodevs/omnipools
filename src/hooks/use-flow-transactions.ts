@@ -103,6 +103,6 @@ export const useFlowTransactions = () => {
     resetTransaction,
     transactionStatus,
     lastResult,
-    isConnected: !!currentUser
+    isConnected: user.loggedIn
   }
 } 
