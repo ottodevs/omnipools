@@ -4,18 +4,16 @@ import { useParams } from 'next/navigation'
 import { useState } from 'react'
 import Card from '@/components/Card'
 import FlowConnect from '@/components/flow-connect'
-import TransactionExecutor from '@/components/transaction-executor'
-import RoleSelector from '@/components/role-selector'
-import RolePanels from '@/components/role-panels'
-import WinnerManager from '@/components/winner-manager'
-import ReceiverLinker from '@/components/receiver-linker'
 import PayoutExecutor from '@/components/payout-executor'
-import FernCurrencyConverter from '@/components/fern-currency-converter'
-import FernWalletManager from '@/components/fern-wallet-manager'
-import FernPayoutConverter from '@/components/fern-payout-converter'
-import { useRole } from '@/lib/contexts/role-context'
+import ReceiverLinker from '@/components/receiver-linker'
+import RolePanels from '@/components/role-panels'
+import RoleSelector from '@/components/role-selector'
+import TransactionExecutor from '@/components/transaction-executor'
+import WinnerManager from '@/components/winner-manager'
+
 import { useVaultData } from '@/hooks/use-vault-data'
 import { CADENCE_TRANSACTIONS, DEMO_ORG_ADDRESS } from '@/lib/constants/vault'
+import { useRole } from '@/lib/contexts/role-context'
 
 export default function VaultPage() {
   const params = useParams()
@@ -25,11 +23,12 @@ export default function VaultPage() {
   const [localStatus, setLocalStatus] = useState<string | null>(null)
   const [localOperationId, setLocalOperationId] = useState<number | null>(null)
   const [localTotalPaid, setLocalTotalPaid] = useState<number | null>(null)
-  
+
   // New state for enhanced functionality
-  const [winners, setWinners] = useState<Array<{ address: string; amount: number }>>([])
+  const [winners, setWinners] = useState<Array<{ address: string, amount: number }>>([])
   const [isReceiverLinked, setIsReceiverLinked] = useState(false)
   const [payoutResult, setPayoutResult] = useState<any>(null)
+  const [showFundingDialog, setShowFundingDialog] = useState(false)
 
   const { data, error, loading, refresh, flowConfig, useRealData, toggleDataSource } = useVaultData(DEMO_ORG_ADDRESS, id as string)
 
@@ -50,7 +49,7 @@ export default function VaultPage() {
     setLocalTotalPaid(totalPaid)
   }
 
-  const handleWinnersUpdated = (newWinners: Array<{ address: string; amount: number }>) => {
+  const handleWinnersUpdated = (newWinners: Array<{ address: string, amount: number }>) => {
     setWinners(newWinners)
     setLocalStatus('PayoutPlanned')
   }
@@ -66,13 +65,24 @@ export default function VaultPage() {
     setLocalTotalPaid(totalPaid)
   }
 
+  const handleFundingComplete = (amount: number, currency: string, method: 'crypto' | 'fiat') => {
+    console.log(`Vault funded: ${amount} ${currency} via ${method}`)
+    // In a real implementation, this would trigger Flow transaction to fund the vault
+    // For now, just refresh the data
+    setTimeout(() => {
+      refresh()
+    }, 1000)
+  }
+
   // Use local state if available, otherwise use data from hook
-  const displayData = data ? {
-    ...data,
-    status: localStatus || data.status,
-    lastOperationId: localOperationId !== null ? localOperationId : data.lastOperationId,
-    totalPaid: localTotalPaid !== null ? localTotalPaid : data.totalPaid,
-  } : null
+  const displayData = data
+    ? {
+        ...data,
+        status: localStatus || data.status,
+        lastOperationId: localOperationId !== null ? localOperationId : data.lastOperationId,
+        totalPaid: localTotalPaid !== null ? localTotalPaid : data.totalPaid,
+      }
+    : null
 
   // Show skeleton for 300-500ms to avoid "stuck loading" when live-demoing
   if (loading) {
@@ -393,64 +403,59 @@ export default function VaultPage() {
           <div className="flex items-center justify-between">
             <h2 className="text-2xl font-semibold">Role-Based Actions</h2>
             <div className="text-sm text-white/60">
-              Role: <span className="text-blue-200 font-medium">{role || 'Not selected'}</span>
+              Role:
+              {' '}
+              <span className="font-medium text-blue-200">{role || 'Not selected'}</span>
             </div>
           </div>
-          
+
           {role === 'Organizer' && (
             <div className="space-y-6">
-              <WinnerManager 
-                vaultId={parseInt(id as string)}
+              {/* Fund Vault Button */}
+              <Card title="Fund Vault">
+                <div className="space-y-4">
+                  <p className="text-white/70 text-sm">
+                    Add funds to this vault using fiat currency or USDC. Fern handles automatic conversion and bridging.
+                  </p>
+                  <button
+                    onClick={() => setShowFundingDialog(true)}
+                    className="w-full bg-gradient-to-r from-blue-500 to-blue-600 text-white px-4 py-3 rounded-lg hover:from-blue-600 hover:to-blue-700 font-medium transition-all"
+                  >
+                    <span className="flex items-center justify-center gap-2">
+                      <span className="text-xl">💰</span>
+                      Fund Vault
+                    </span>
+                  </button>
+                </div>
+              </Card>
+
+              <WinnerManager
+                vaultId={Number.parseInt(id as string)}
                 onWinnersUpdated={handleWinnersUpdated}
               />
-              
-              {/* Fern Currency Conversion for Pool Funding */}
-              <div className="grid gap-6 lg:grid-cols-2">
-                <FernCurrencyConverter
-                  defaultSourceCurrency="USD"
-                  defaultDestinationCurrency="USDC"
-                  onConversionComplete={(transaction) => {
-                    console.log('Funding conversion completed:', transaction)
-                    // Refresh vault data after funding
-                    setTimeout(refresh, 2000)
-                  }}
-                />
-                <FernWalletManager 
-                  onWalletSelect={(wallet) => console.log('Selected wallet:', wallet)}
-                />
-              </div>
-              
+
               {winners.length > 0 && (
                 <>
                   <PayoutExecutor
-                    vaultId={parseInt(id as string)}
+                    vaultId={Number.parseInt(id as string)}
                     orgAddress={displayData?.org || DEMO_ORG_ADDRESS}
                     winners={winners}
                     onPayoutComplete={handlePayoutComplete}
-                  />
-                  
-                  {/* Fern Fiat Payout Conversion */}
-                  <FernPayoutConverter
-                    winners={winners}
-                    onPayoutConversion={(conversions) => {
-                      console.log('Fiat payout conversions:', conversions)
-                      // Could integrate with Flow Actions to handle fiat payouts
-                    }}
                   />
                 </>
               )}
             </div>
           )}
-          
+
           {role === 'Participant' && (
             <div className="space-y-6">
               <ReceiverLinker onStatusChange={handleReceiverStatusChange} />
-              
+
               {isReceiverLinked && (
                 <Card title="Ready to Receive">
-                  <div className="text-center py-6">
-                    <div className="text-4xl mb-4">✅</div>
-                    <h3 className="text-lg font-semibold text-green-200 mb-2">
+                  <div className="py-6 text-center">
+                    <div className="mb-4 text-4xl">✅</div>
+                    <h3 className="mb-2 text-lg font-semibold text-green-200">
                       You're Ready!
                     </h3>
                     <p className="text-white/70">
@@ -461,13 +466,13 @@ export default function VaultPage() {
               )}
             </div>
           )}
-          
+
           {role === 'Sponsor' && (
             <Card title="Sponsor Dashboard">
-              <div className="text-center py-8">
-                <div className="text-4xl mb-4">💰</div>
-                <h3 className="text-lg font-semibold mb-2">Sponsor View</h3>
-                <p className="text-white/70 mb-4">
+              <div className="py-8 text-center">
+                <div className="mb-4 text-4xl">💰</div>
+                <h3 className="mb-2 text-lg font-semibold">Sponsor View</h3>
+                <p className="mb-4 text-white/70">
                   Track funding impact across events and pools
                 </p>
                 <div className="space-y-2 text-sm text-white/60">
@@ -478,29 +483,38 @@ export default function VaultPage() {
               </div>
             </Card>
           )}
-          
+
           {!role && (
             <Card title="Select Your Role">
-              <div className="text-center py-8">
-                <div className="text-4xl mb-4">👤</div>
-                <h3 className="text-lg font-semibold mb-2">Choose Your Role</h3>
-                <p className="text-white/70 mb-4">
+              <div className="py-8 text-center">
+                <div className="mb-4 text-4xl">👤</div>
+                <h3 className="mb-2 text-lg font-semibold">Choose Your Role</h3>
+                <p className="mb-4 text-white/70">
                   Select your role to see relevant actions for this vault
                 </p>
                 <RoleSelector />
               </div>
             </Card>
           )}
-          
+
           {/* Fallback to original panels for other vaults */}
           {id !== '2' && id !== '1' && (
-            <RolePanels 
-              vaultId={id as string} 
-              vaultData={displayData} 
+            <RolePanels
+              vaultId={id as string}
+              vaultData={displayData}
               onStatusUpdate={handleStatusUpdate}
             />
           )}
         </div>
+
+        {/* Funding Dialog */}
+        <VaultFundingDialog
+          isOpen={showFundingDialog}
+          onClose={() => setShowFundingDialog(false)}
+          vaultId={Number.parseInt(id as string)}
+          targetAmount={1000}
+          onFundingComplete={handleFundingComplete}
+        />
       </div>
     </main>
   )

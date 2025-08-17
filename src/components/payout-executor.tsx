@@ -1,8 +1,9 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { executePayoutTransaction, waitForTransaction } from '@/lib/flow/transactions'
+import { useFernCurrencyConversion } from '@/hooks/use-fern'
 import Card from './Card'
 
 interface PayoutExecutorProps {
@@ -21,8 +22,21 @@ export default function PayoutExecutor({
   const [executing, setExecuting] = useState(false)
   const [transactionId, setTransactionId] = useState<string | null>(null)
   const [result, setResult] = useState<any>(null)
+  const [payoutMode, setPayoutMode] = useState<'crypto' | 'fiat'>('crypto')
+  const [fiatCurrency, setFiatCurrency] = useState('USD')
+  const { getExchangeRate } = useFernCurrencyConversion()
+  const [exchangeRate, setExchangeRate] = useState<string>('')
 
   const totalAmount = winners.reduce((sum, winner) => sum + winner.amount, 0)
+
+  // Get exchange rate when fiat currency changes
+  useEffect(() => {
+    if (payoutMode === 'fiat') {
+      getExchangeRate('USDC', fiatCurrency)
+        .then(({ rate }) => setExchangeRate(rate))
+        .catch(console.error)
+    }
+  }, [payoutMode, fiatCurrency, getExchangeRate])
 
   const handleExecutePayout = async () => {
     setExecuting(true)
@@ -30,24 +44,47 @@ export default function PayoutExecutor({
     setResult(null)
 
     try {
-      const txId = await executePayoutTransaction(vaultId, orgAddress)
-      setTransactionId(txId)
-      
-      const txResult = await waitForTransaction(txId)
-      
-      if (txResult.status === 4) { // SEALED
-        // In a real implementation, we'd parse the events to get actual results
-        // For demo purposes, simulate weak guarantees behavior
+      if (payoutMode === 'fiat') {
+        // Fern fiat payout flow
+        console.log(`Converting ${totalAmount} USDC to ${fiatCurrency} for ${winners.length} winners`)
+        
+        // Simulate Fern API calls for fiat conversion
+        await new Promise(resolve => setTimeout(resolve, 2000))
+        
         const simulatedResult = {
           operationId: Date.now() % 1000,
-          totalPaid: totalAmount * 0.8, // Simulate some misses
-          misses: winners.slice(-1).reduce((acc, winner) => {
-            acc[winner.address] = winner.amount
-            return acc
-          }, {} as any)
+          totalPaid: totalAmount,
+          misses: {},
+          fiatConversions: winners.map(winner => ({
+            address: winner.address,
+            usdcAmount: winner.amount,
+            fiatAmount: winner.amount * parseFloat(exchangeRate || '1'),
+            currency: fiatCurrency
+          }))
         }
         
         setResult(simulatedResult)
+        onPayoutComplete(simulatedResult.operationId, simulatedResult.totalPaid, simulatedResult.misses)
+      } else {
+        // Original crypto payout flow
+        const txId = await executePayoutTransaction(vaultId, orgAddress)
+        setTransactionId(txId)
+        
+        const txResult = await waitForTransaction(txId)
+        
+        if (txResult.status === 4) { // SEALED
+          // In a real implementation, we'd parse the events to get actual results
+          // For demo purposes, simulate weak guarantees behavior
+          const simulatedResult = {
+            operationId: Date.now() % 1000,
+            totalPaid: totalAmount * 0.8, // Simulate some misses
+            misses: winners.slice(-1).reduce((acc, winner) => {
+              acc[winner.address] = winner.amount
+              return acc
+            }, {} as any)
+          }
+          
+          setResult(simulatedResult)
         onPayoutComplete(
           simulatedResult.operationId,
           simulatedResult.totalPaid,
@@ -65,8 +102,51 @@ export default function PayoutExecutor({
   }
 
   return (
-    <Card title="Execute Flow Actions Payout">
+    <Card title="Execute Payout">
       <div className="space-y-6">
+        {/* Payout Method Selection */}
+        <div>
+          <label className="block text-sm font-medium mb-2 text-white">Payout Method</label>
+          <div className="grid grid-cols-2 gap-2">
+            <button
+              onClick={() => setPayoutMode('crypto')}
+              className={`p-3 rounded-lg border text-sm font-medium transition-colors ${
+                payoutMode === 'crypto'
+                  ? 'border-blue-500 bg-blue-500/20 text-blue-200'
+                  : 'border-white/20 bg-white/5 text-white/70 hover:bg-white/10'
+              }`}
+            >
+              🪙 USDC Direct
+            </button>
+            <button
+              onClick={() => setPayoutMode('fiat')}
+              className={`p-3 rounded-lg border text-sm font-medium transition-colors ${
+                payoutMode === 'fiat'
+                  ? 'border-green-500 bg-green-500/20 text-green-200'
+                  : 'border-white/20 bg-white/5 text-white/70 hover:bg-white/10'
+              }`}
+            >
+              💳 Fiat Currency
+            </button>
+          </div>
+        </div>
+
+        {/* Fiat Currency Selection */}
+        {payoutMode === 'fiat' && (
+          <div>
+            <label className="block text-sm font-medium mb-2 text-white">Convert to</label>
+            <select
+              value={fiatCurrency}
+              onChange={(e) => setFiatCurrency(e.target.value)}
+              className="w-full px-3 py-2 bg-white/5 border border-white/20 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-green-500"
+            >
+              <option value="USD" className="bg-gray-800">🇺🇸 USD - US Dollar</option>
+              <option value="EUR" className="bg-gray-800">🇪🇺 EUR - Euro</option>
+              <option value="GBP" className="bg-gray-800">🇬🇧 GBP - British Pound</option>
+            </select>
+          </div>
+        )}
+
         {/* Payout summary */}
         <div className="p-4 rounded-xl bg-white/5 border border-white/10">
           <h4 className="font-medium mb-3 text-white">Payout Summary</h4>
@@ -81,8 +161,21 @@ export default function PayoutExecutor({
             </div>
             <div className="flex justify-between">
               <span className="text-white/60">Total Amount:</span>
-              <span className="text-white/80 font-medium">{totalAmount.toFixed(2)} USDC</span>
+              <span className="text-white/80 font-medium">
+                {totalAmount.toFixed(2)} USDC
+                {payoutMode === 'fiat' && exchangeRate && (
+                  <span className="text-green-200 ml-2">
+                    → {(totalAmount * parseFloat(exchangeRate)).toFixed(2)} {fiatCurrency}
+                  </span>
+                )}
+              </span>
             </div>
+            {payoutMode === 'fiat' && (
+              <div className="flex justify-between">
+                <span className="text-white/60">Payout Method:</span>
+                <span className="text-green-200">Fern → Bank Accounts</span>
+              </div>
+            )}
             <div className="flex justify-between">
               <span className="text-white/60">Treasury:</span>
               <code className="text-blue-200 bg-blue-500/20 px-2 py-1 rounded text-xs">
@@ -92,15 +185,27 @@ export default function PayoutExecutor({
           </div>
         </div>
 
-        {/* Weak guarantees info */}
-        <div className="p-4 rounded-xl bg-yellow-500/10 border border-yellow-500/20">
-          <h4 className="font-medium mb-2 text-yellow-200">⚡ Weak Guarantees</h4>
-          <div className="text-sm text-yellow-200/80 space-y-1">
-            <p>• Recipients without linked receivers will be skipped</p>
-            <p>• Failed payments won't revert the entire transaction</p>
-            <p>• Misses are recorded and can be retried later</p>
+        {/* Payment method info */}
+        {payoutMode === 'crypto' ? (
+          <div className="p-4 rounded-xl bg-yellow-500/10 border border-yellow-500/20">
+            <h4 className="font-medium mb-2 text-yellow-200">⚡ Weak Guarantees</h4>
+            <div className="text-sm text-yellow-200/80 space-y-1">
+              <p>• Recipients without linked receivers will be skipped</p>
+              <p>• Failed payments won't revert the entire transaction</p>
+              <p>• Misses are recorded and can be retried later</p>
+            </div>
           </div>
-        </div>
+        ) : (
+          <div className="p-4 rounded-xl bg-green-500/10 border border-green-500/20">
+            <h4 className="font-medium mb-2 text-green-200">🌿 Fern Fiat Payouts</h4>
+            <div className="text-sm text-green-200/80 space-y-1">
+              <p>• Winners receive fiat directly to bank accounts</p>
+              <p>• Automatic KYC/compliance handling by Fern</p>
+              <p>• Global currency support with local payment rails</p>
+              <p>• Failed conversions are retried automatically</p>
+            </div>
+          </div>
+        )}
 
         {/* Transaction status */}
         {transactionId && (
@@ -179,8 +284,8 @@ export default function PayoutExecutor({
             </span>
           ) : (
             <span className="flex items-center justify-center gap-2">
-              <span className="text-xl">⚡</span>
-              Execute Flow Actions Payout
+              <span className="text-xl">{payoutMode === 'fiat' ? '🌿' : '⚡'}</span>
+              {payoutMode === 'fiat' ? `Pay ${fiatCurrency} via Fern` : 'Execute USDC Payout'}
             </span>
           )}
         </button>
