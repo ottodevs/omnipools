@@ -127,7 +127,7 @@ export const useVaultData = (orgAddress: string, vaultId: string) => {
                 addedAt: Date.now().toString()
               })),
               receipts: [
-                { amount: vault1Data.totalPaid, vendor: 'ETHGlobal', uri: 'https://ethglobal.com' }
+                { amount: vault1Data.totalPaid, vendor: 'Demo Org', uri: 'https://omnipools.app' }
               ],
               misses: vault1Data.misses
             }

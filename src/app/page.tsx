@@ -18,7 +18,7 @@ export default function Home() {
         <div className="mb-6 sm:mb-8">
           <img 
             src="/assets/omnipools_banner_inline.png" 
-            alt="TrustFlow" 
+            alt="OmniPools" 
             className="w-full rounded-2xl"
           />
         </div>
@@ -26,7 +26,7 @@ export default function Home() {
         {/* Mobile-first header */}
         <div className="mb-6 sm:mb-8">
           <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold mb-3 sm:mb-4">
-            TrustFlow
+    OmniPools
           </h1>
           <p className="text-lg sm:text-xl text-blue-400 mb-4">
             Flow Actions Demo

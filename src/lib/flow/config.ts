@@ -70,8 +70,8 @@ export function initializeFlowConfig(network: NetworkType) {
     'discovery.wallet': networkConfig.discovery,
 
     // App metadata (new according to FCL docs)
-    'app.detail.title': 'TrustFlow',
-    'app.detail.icon': window.location.origin + '/assets/logo-square.svg',
+    'app.detail.title': 'OmniPools',
+    'app.detail.icon': window.location.origin + '/sticker.png',
     'app.detail.description': 'Chain-abstracted payouts for events. Atomic, audit-ready.',
     'app.detail.url': window.location.origin,
 

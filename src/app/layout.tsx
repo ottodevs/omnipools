@@ -16,13 +16,13 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "TrustFlow - OmniPools",
+  title: "OmniPools",
   description: "Chain-abstracted payouts for events. Atomic, audit-ready.",
   manifest: "/manifest.json",
   appleWebApp: {
     capable: true,
     statusBarStyle: "default",
-    title: "TrustFlow"
+    title: "OmniPools"
   }
 };
 

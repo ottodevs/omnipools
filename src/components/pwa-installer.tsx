@@ -98,7 +98,7 @@ export default function PWAInstaller() {
         <div className="flex-1">
           <div className="flex items-center gap-2 mb-2">
             <span className="text-2xl">📱</span>
-            <h3 className="text-lg font-bold">Install TrustFlow</h3>
+            <h3 className="text-lg font-bold">Install OmniPools</h3>
           </div>
           <p className="text-base text-blue-100 leading-relaxed">Add to your home screen for quick access and native app experience</p>
         </div>

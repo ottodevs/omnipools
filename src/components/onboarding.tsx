@@ -8,10 +8,10 @@ import { useOnboardingStore } from '@/lib/stores/onboarding-store'
 
 const onboardingSteps = [
   {
-    title: "Welcome to TrustFlow",
+    title: "Welcome to OmniPools",
     subtitle: "Chain-abstracted payouts for events",
     description: "Create pools, manage participants, and execute atomic payouts with audit-ready transparency.",
-    image: "/assets/omnipools_banner_recommended.png"
+    image: "/sticker.png"
   },
   {
     title: "AI-Powered Pool Creation",
@@ -110,7 +110,7 @@ export default function Onboarding() {
             className="text-center mb-8 sm:mb-12"
           >
             <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-white mb-4">Choose Your Role</h1>
-            <p className="text-base sm:text-lg text-white/70">Select how you'll use TrustFlow</p>
+            <p className="text-base sm:text-lg text-white/70">Select how you'll use OmniPools</p>
           </motion.div>
 
           <div className="grid gap-4 sm:gap-6 md:grid-cols-3 max-w-4xl mx-auto">

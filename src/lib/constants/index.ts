@@ -20,7 +20,7 @@ export const ONBOARDING_STEPS = [
   {
     id: 'demo',
     title: 'Demo Vault',
-    description: 'View the ETHGlobal NY Bounties vault and its payout status.',
+    description: 'View the demo bounties vault and its payout status.',
   },
 ] as const satisfies readonly {
   id: string

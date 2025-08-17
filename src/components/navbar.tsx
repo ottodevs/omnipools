@@ -14,13 +14,13 @@ export default function Navbar() {
           {/* Logo - Mobile optimized */}
           <Link href="/" className="flex items-center gap-3 hover:opacity-80 transition-opacity min-h-[48px]">
             <Image 
-              src="/assets/logo-square.svg" 
-              alt="TrustFlow" 
+              src="/sticker.png" 
+              alt="OmniPools" 
               width={36} 
               height={36}
               className="rounded-lg"
             />
-            <span className="text-lg sm:text-xl font-bold text-white">TrustFlow</span>
+            <span className="text-lg sm:text-xl font-bold text-white">OmniPools</span>
           </Link>
           
           {/* Desktop Navigation */}

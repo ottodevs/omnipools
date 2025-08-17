@@ -167,7 +167,7 @@ export default function PoolsPage() {
           animate={{ opacity: 1, y: 0 }}
           className="relative"
         >
-          <img src="/assets/omnipools_banner_inline.png" alt="TrustFlow" className="w-full rounded-2xl" />
+          <img src="/sticker.png" alt="OmniPools" className="w-32 h-32 mx-auto rounded-2xl" />
           <div className="absolute inset-0 rounded-2xl bg-black/20" />
         </motion.div>
 
@@ -240,7 +240,7 @@ export default function PoolsPage() {
                 <Card title="No Pools Yet">
                   <div className="text-center py-12">
                     <div className="text-6xl mb-6">🏊‍♂️</div>
-                    <h3 className="text-xl font-semibold mb-2">Dive into TrustFlow</h3>
+                    <h3 className="text-xl font-semibold mb-2">Dive into OmniPools</h3>
                     <p className="text-white/60 mb-6 max-w-md mx-auto">
                       Create your first pool with AI assistance and start managing payouts with audit-ready transparency
                     </p>
