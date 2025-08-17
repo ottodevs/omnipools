@@ -42,10 +42,13 @@
     "reset-run": "./scripts/reset-and-run.sh"
   },
   "dependencies": {
+    "@ai-sdk/openai": "2.0.15",
     "@onflow/fcl": "^1.12.2",
+    "ai": "5.0.15",
     "next": "15.4.6",
     "react": "19.1.0",
-    "react-dom": "19.1.0"
+    "react-dom": "19.1.0",
+    "zod": "4.0.17"
   },
   "devDependencies": {
     "@antfu/eslint-config": "5.2.1",
