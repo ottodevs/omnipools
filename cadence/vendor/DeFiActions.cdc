@@ -45,7 +45,7 @@ access(all) contract DeFiActions {
     
     /// Executes a transfer action
     access(all) fun executeTransfer(
-        from: &{FungibleToken.Vault},
+        from: auth(FungibleToken.Withdraw) &{FungibleToken.Vault},
         to: &{FungibleToken.Receiver},
         amount: UFix64
     ): Bool {

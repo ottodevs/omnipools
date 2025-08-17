@@ -8,7 +8,7 @@ transaction() {
         // Check if the signer already has a USDC vault
         if signer.storage.borrow<&MockUSDC.Vault>(from: MockUSDC.VaultStoragePath) == nil {
             // Create a new empty vault
-            let vault <- MockUSDC.createEmptyVault()
+            let vault <- MockUSDC.createEmptyVault(vaultType: Type<@MockUSDC.Vault>())
             
             // Store it in the signer's storage
             signer.storage.save(<-vault, to: MockUSDC.VaultStoragePath)

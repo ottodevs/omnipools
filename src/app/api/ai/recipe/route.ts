@@ -5,12 +5,17 @@ import { z } from 'zod'
 // Strict schema for Recipe object
 const RecipeSchema = z.object({
   name: z.string(),
-  template: z.enum(['Bounty', 'Event', 'Staking House']),
-  widgets: z.array(z.enum(['kycFern', 'cctpCircle', 'lzMirror', 'tickets', 'vrf', 'farcaster'])),
+  template: z.enum(['Bounty', 'Event', 'Staking House', 'Tournament', 'Grant Round', 'Group Fund']),
+  widgets: z.array(z.enum(['kycFern', 'tickets', 'cctpCircle', 'lzMirror', 'vrf', 'farcaster'])),
   token: z.literal('USDC'),
   chain: z.literal('Flow'),
   durationDays: z.number().optional(),
   targetAmount: z.number().optional(),
+  allocation: z.object({
+    prizes: z.number(),
+    ops: z.number(),
+    buffer: z.number()
+  }).optional(),
 })
 
 type Recipe = z.infer<typeof RecipeSchema>
@@ -21,15 +26,21 @@ function generateFallbackRecipe(prompt: string): Recipe {
   const words = promptLower.split(/\s+/)
   
   // Extract template from prompt
-  let template: 'Bounty' | 'Event' | 'Staking House' = 'Bounty'
+  let template: 'Bounty' | 'Event' | 'Staking House' | 'Tournament' | 'Grant Round' | 'Group Fund' = 'Bounty'
   if (words.includes('event') || words.includes('meetup') || words.includes('conference')) {
     template = 'Event'
   } else if (words.includes('staking') || words.includes('house') || words.includes('farm')) {
     template = 'Staking House'
+  } else if (words.includes('tournament') || words.includes('competition') || words.includes('contest')) {
+    template = 'Tournament'
+  } else if (words.includes('grant') || words.includes('funding') || words.includes('round')) {
+    template = 'Grant Round'
+  } else if (words.includes('group') || words.includes('fund') || words.includes('pool')) {
+    template = 'Group Fund'
   }
   
   // Extract widgets from prompt
-  const widgets: Array<'kycFern' | 'cctpCircle' | 'lzMirror' | 'tickets' | 'vrf' | 'farcaster'> = ['cctpCircle']
+  const widgets: Array<'kycFern' | 'tickets' | 'cctpCircle' | 'lzMirror' | 'vrf' | 'farcaster'> = ['cctpCircle']
   
   if (words.includes('kyc') || words.includes('fern') || words.includes('identity')) {
     widgets.push('kycFern')
@@ -117,8 +128,11 @@ Available widgets:
 
 Available templates:
 - Bounty: For hackathons, bug bounties, or reward programs
-- Event: For conferences, meetups, or community events
+- Event: For conferences, meetups, or community events  
 - Staking House: For staking pools, farming, or yield generation
+- Tournament: For competitions with multiple rounds and rankings
+- Grant Round: For funding rounds, grants, and investment pools
+- Group Fund: For collective funding and shared resources
 
 Generate a creative and descriptive name for the vault.`,
     })

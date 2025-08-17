@@ -1,8 +1,8 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #0b1020;
+  --foreground: #ffffff;
 }
 
 @theme inline {
@@ -12,15 +12,90 @@
   --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
-
+/* Mobile-first base styles */
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-sans), system-ui, -apple-system, sans-serif;
+  font-size: 16px; /* Ensure 16px minimum for mobile readability */
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Ensure minimum touch target sizes on mobile */
+@media (max-width: 768px) {
+  button, 
+  a[role="button"], 
+  input[type="button"], 
+  input[type="submit"] {
+    min-height: 48px; /* 48px minimum for better accessibility */
+    min-width: 48px;
+  }
+  
+  /* Larger text for better mobile readability */
+  .text-sm {
+    font-size: 1rem; /* 16px instead of 14px */
+  }
+  
+  .text-base {
+    font-size: 1.125rem; /* 18px instead of 16px */
+  }
+  
+  .text-lg {
+    font-size: 1.25rem; /* 20px instead of 18px */
+  }
+  
+  .text-xl {
+    font-size: 1.5rem; /* 24px instead of 20px */
+  }
+  
+  .text-2xl {
+    font-size: 1.875rem; /* 30px instead of 24px */
+  }
+  
+  .text-3xl {
+    font-size: 2.25rem; /* 36px instead of 30px */
+  }
+}
+
+/* Safe area handling for iOS */
+@supports (padding-top: env(safe-area-inset-top)) {
+  .safe-area-top {
+    padding-top: env(safe-area-inset-top);
+  }
+  
+  .safe-area-bottom {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+  
+  .safe-area-left {
+    padding-left: env(safe-area-inset-left);
+  }
+  
+  .safe-area-right {
+    padding-right: env(safe-area-inset-right);
+  }
+}
+
+/* Prevent zoom on input focus (iOS) */
+input[type="text"],
+input[type="email"],
+input[type="number"],
+input[type="password"],
+input[type="url"],
+textarea,
+select {
+  font-size: 16px !important;
+}
+
+/* Better scrolling on mobile */
+html {
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+}
+
+/* Remove tap highlights on mobile */
+* {
+  -webkit-tap-highlight-color: transparent;
 }

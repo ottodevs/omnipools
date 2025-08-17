@@ -7,16 +7,26 @@ import FlowConnect from '@/components/flow-connect'
 import TransactionExecutor from '@/components/transaction-executor'
 import RoleSelector from '@/components/role-selector'
 import RolePanels from '@/components/role-panels'
+import WinnerManager from '@/components/winner-manager'
+import ReceiverLinker from '@/components/receiver-linker'
+import PayoutExecutor from '@/components/payout-executor'
+import { useRole } from '@/lib/contexts/role-context'
 import { useVaultData } from '@/hooks/use-vault-data'
 import { CADENCE_TRANSACTIONS, DEMO_ORG_ADDRESS } from '@/lib/constants/vault'
 
 export default function VaultPage() {
   const params = useParams()
   const id = params.id || '1'
+  const { role } = useRole()
   const [showMisses, setShowMisses] = useState(false)
   const [localStatus, setLocalStatus] = useState<string | null>(null)
   const [localOperationId, setLocalOperationId] = useState<number | null>(null)
   const [localTotalPaid, setLocalTotalPaid] = useState<number | null>(null)
+  
+  // New state for enhanced functionality
+  const [winners, setWinners] = useState<Array<{ address: string; amount: number }>>([])
+  const [isReceiverLinked, setIsReceiverLinked] = useState(false)
+  const [payoutResult, setPayoutResult] = useState<any>(null)
 
   const { data, error, loading, refresh, flowConfig, useRealData, toggleDataSource } = useVaultData(DEMO_ORG_ADDRESS, id as string)
 
@@ -33,6 +43,22 @@ export default function VaultPage() {
 
   const handleStatusUpdate = (status: string, operationId: number, totalPaid: number) => {
     setLocalStatus(status)
+    setLocalOperationId(operationId)
+    setLocalTotalPaid(totalPaid)
+  }
+
+  const handleWinnersUpdated = (newWinners: Array<{ address: string; amount: number }>) => {
+    setWinners(newWinners)
+    setLocalStatus('PayoutPlanned')
+  }
+
+  const handleReceiverStatusChange = (linked: boolean) => {
+    setIsReceiverLinked(linked)
+  }
+
+  const handlePayoutComplete = (operationId: number, totalPaid: number, misses: any) => {
+    setPayoutResult({ operationId, totalPaid, misses })
+    setLocalStatus('Paid')
     setLocalOperationId(operationId)
     setLocalTotalPaid(totalPaid)
   }
@@ -359,17 +385,92 @@ export default function VaultPage() {
           </Card>
         </div>
 
-        {/* Role-based panels for vault #2 */}
-        {id === '2' && (
-          <div className="space-y-6">
+        {/* Enhanced Role-based panels */}
+        <div className="space-y-6">
+          <div className="flex items-center justify-between">
             <h2 className="text-2xl font-semibold">Role-Based Actions</h2>
+            <div className="text-sm text-white/60">
+              Role: <span className="text-blue-200 font-medium">{role || 'Not selected'}</span>
+            </div>
+          </div>
+          
+          {role === 'Organizer' && (
+            <div className="space-y-6">
+              <WinnerManager 
+                vaultId={parseInt(id as string)}
+                onWinnersUpdated={handleWinnersUpdated}
+              />
+              
+              {winners.length > 0 && (
+                <PayoutExecutor
+                  vaultId={parseInt(id as string)}
+                  orgAddress={displayData?.org || DEMO_ORG_ADDRESS}
+                  winners={winners}
+                  onPayoutComplete={handlePayoutComplete}
+                />
+              )}
+            </div>
+          )}
+          
+          {role === 'Participant' && (
+            <div className="space-y-6">
+              <ReceiverLinker onStatusChange={handleReceiverStatusChange} />
+              
+              {isReceiverLinked && (
+                <Card title="Ready to Receive">
+                  <div className="text-center py-6">
+                    <div className="text-4xl mb-4">✅</div>
+                    <h3 className="text-lg font-semibold text-green-200 mb-2">
+                      You're Ready!
+                    </h3>
+                    <p className="text-white/70">
+                      Your USDC receiver is linked. You can now receive payouts from this vault.
+                    </p>
+                  </div>
+                </Card>
+              )}
+            </div>
+          )}
+          
+          {role === 'Sponsor' && (
+            <Card title="Sponsor Dashboard">
+              <div className="text-center py-8">
+                <div className="text-4xl mb-4">💰</div>
+                <h3 className="text-lg font-semibold mb-2">Sponsor View</h3>
+                <p className="text-white/70 mb-4">
+                  Track funding impact across events and pools
+                </p>
+                <div className="space-y-2 text-sm text-white/60">
+                  <div>• Monitor vault funding and payout efficiency</div>
+                  <div>• Cross-chain treasury management (roadmap)</div>
+                  <div>• Impact analytics and reporting (roadmap)</div>
+                </div>
+              </div>
+            </Card>
+          )}
+          
+          {!role && (
+            <Card title="Select Your Role">
+              <div className="text-center py-8">
+                <div className="text-4xl mb-4">👤</div>
+                <h3 className="text-lg font-semibold mb-2">Choose Your Role</h3>
+                <p className="text-white/70 mb-4">
+                  Select your role to see relevant actions for this vault
+                </p>
+                <RoleSelector />
+              </div>
+            </Card>
+          )}
+          
+          {/* Fallback to original panels for other vaults */}
+          {id !== '2' && id !== '1' && (
             <RolePanels 
               vaultId={id as string} 
               vaultData={displayData} 
               onStatusUpdate={handleStatusUpdate}
             />
-          </div>
-        )}
+          )}
+        </div>
       </div>
     </main>
   )

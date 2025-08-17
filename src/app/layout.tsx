@@ -1,8 +1,9 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import Providers from "./providers";
 import Navbar from "@/components/navbar";
+import PWAInstaller from "@/components/pwa-installer";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -15,8 +16,22 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "OmniPools - Flow Actions Demo",
+  title: "TrustFlow - OmniPools",
   description: "Chain-abstracted payouts for events. Atomic, audit-ready.",
+  manifest: "/manifest.json",
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "default",
+    title: "TrustFlow"
+  }
+};
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 1,
+  userScalable: false,
+  themeColor: "#3b82f6"
 };
 
 export default function RootLayout({
@@ -32,6 +47,7 @@ export default function RootLayout({
         <Providers>
           <Navbar />
           {children}
+          <PWAInstaller />
         </Providers>
       </body>
     </html>

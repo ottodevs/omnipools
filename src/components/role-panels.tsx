@@ -12,7 +12,7 @@ interface RolePanelsProps {
 }
 
 export default function RolePanels({ vaultId, vaultData, onStatusUpdate }: RolePanelsProps) {
-  const { currentRole } = useRole()
+  const { role: currentRole } = useRole()
   const [isReady, setIsReady] = useState(false)
   const [lastOperationId, setLastOperationId] = useState(vaultData.lastOperationId || 0)
 

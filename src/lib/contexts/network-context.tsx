@@ -46,7 +46,12 @@ export function NetworkProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     if (isHydrated) {
       console.log('🔄 Initializing FCL for network:', currentNetwork)
-      initializeFlowConfig(currentNetwork)
+      try {
+        const config = initializeFlowConfig(currentNetwork)
+        console.log('✅ FCL configured successfully:', config)
+      } catch (error) {
+        console.error('❌ FCL configuration failed:', error)
+      }
     }
   }, [currentNetwork, isHydrated])
 
@@ -78,12 +83,43 @@ export function NetworkProvider({ children }: { children: ReactNode }) {
     console.log('🔄 Switched to network:', network)
   }
 
-  const authenticate = () => {
-    fcl.authenticate()
+  const authenticate = async () => {
+    try {
+      console.log('🔐 Starting authentication for network:', currentNetwork)
+      console.log('🔧 Current FCL config:', await fcl.config().get('discovery.wallet'))
+      
+      // Clear any existing authentication first
+      await fcl.unauthenticate()
+      
+      // Small delay to ensure clean state
+      await new Promise(resolve => setTimeout(resolve, 100))
+      
+      // Start authentication
+      await fcl.authenticate()
+      console.log('✅ Authentication successful')
+    } catch (error) {
+      console.error('❌ Authentication failed:', error)
+      
+      // Provide user-friendly error message
+      const errorMessage = error instanceof Error ? error.message : String(error)
+      if (errorMessage?.includes('User rejected')) {
+        console.log('ℹ️ User cancelled wallet connection')
+      } else if (errorMessage?.includes('locked')) {
+        alert('Please unlock your Flow wallet and try again')
+      } else {
+        alert('Wallet connection failed. Please try switching to local network or check your wallet.')
+      }
+    }
   }
 
-  const unauthenticate = () => {
-    fcl.unauthenticate()
+  const unauthenticate = async () => {
+    try {
+      console.log('🔓 Starting unauthentication')
+      await fcl.unauthenticate()
+      console.log('✅ Unauthentication successful')
+    } catch (error) {
+      console.error('❌ Unauthentication failed:', error)
+    }
   }
 
   return (

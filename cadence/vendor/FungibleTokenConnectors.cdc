@@ -13,9 +13,9 @@ access(all) contract FungibleTokenConnectors {
     /// Resource that represents a source of tokens
     access(all) resource Source {
         access(all) let id: UInt64
-        access(all) let vault: &{FungibleToken.Vault}
+        access(all) let vault: auth(FungibleToken.Withdraw) &{FungibleToken.Vault}
         
-        init(id: UInt64, vault: &{FungibleToken.Vault}) {
+        init(id: UInt64, vault: auth(FungibleToken.Withdraw) &{FungibleToken.Vault}) {
             self.id = id
             self.vault = vault
         }
@@ -48,7 +48,7 @@ access(all) contract FungibleTokenConnectors {
     }
     
     /// Creates a source from a vault
-    access(all) fun createVaultSource(vault: &{FungibleToken.Vault}): @Source {
+    access(all) fun createVaultSource(vault: auth(FungibleToken.Withdraw) &{FungibleToken.Vault}): @Source {
         let sourceId = self.nextConnectorId
         self.nextConnectorId = self.nextConnectorId + 1
         
