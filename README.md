@@ -42,11 +42,12 @@ bun run judge        # Complete demo
 - **Role-based UX**: Organizer, Sponsor, Participant interfaces
 - **Responsive design** with touch-friendly interactions
 
-### 🔐 Flow Blockchain Integration
-- **FCL wallet connection** (Blocto, Flow Wallet)
-- **Real transactions** for all operations (no mocks on critical path)
-- **Testnet deployment** ready for live demonstration
-- **Resource-oriented** Cadence contracts with capability security
+### 🔗 Flow Blockchain Integration
+- **Production Testnet**: All contracts deployed at `0x035662afa58bdc22`
+- **Cadence 1.0**: Latest standard with resource-oriented programming
+- **Flow Actions**: Atomic cross-chain payout execution
+- **FCL Integration**: Native wallet connection (Blocto, Flow Wallet)
+- **Real Transactions**: Live blockchain operations, no mocks
 
 ## 🎯 Judge Demo Flow
 
@@ -113,24 +114,58 @@ Navigate to `http://localhost:3000` → Full local blockchain demo
 - **Flow Testnet** for live blockchain operations
 - **Environment-based** configuration (local/testnet/mainnet)
 
-## 📋 Contract Addresses
+## 🔗 Flow Blockchain Integration
 
-See [TESTNET_ADDRESSES.md](TESTNET_ADDRESSES.md) for deployment information.
+### Production Testnet Deployment ✅
+**All contracts live at**: `0x035662afa58bdc22`
+
+| Contract | Purpose | Status |
+|----------|---------|--------|
+| **Registry** | Organization management | ✅ Live |
+| **Vaults** | Pool creation & payouts | ✅ Live |
+| **MockUSDC** | Test token (Cadence 1.0) | ✅ Live |
+| **DeFiActions** | Flow Actions integration | ✅ Live |
+| **FungibleTokenConnectors** | Cross-chain utilities | ✅ Live |
+
+**Block Explorer**: [View on Flowscan](https://testnet.flowscan.io/account/035662afa58bdc22)
+
+### Flow Actions Integration
+- **Atomic Payouts**: Multi-recipient transfers in single transaction
+- **Weak Guarantees**: Failed recipients don't block successful ones  
+- **Cross-Chain Ready**: Architecture for CCTP and LayerZero integration
+- **Audit Trail**: Immutable blockchain records for compliance
 
 ## 📖 Documentation
 
-- **[Judge Flow](JUDGE_FLOW.md)** - Complete evaluation guide
-- **[Setup Guide](docs/setup.md)** - Environment and development
-- **[Architecture](docs/architecture.md)** - Flow Actions and contracts
+### Core Documentation
+- **[Flow Integration](docs/flow-integration.md)** - Blockchain architecture & Flow Actions
+- **[Flow Showcase](docs/flow-showcase.md)** - Flow ecosystem highlights & innovation
+- **[Deployment Guide](docs/deployment.md)** - Production testnet deployment  
+- **[Flow Actions](docs/flow-actions.md)** - Atomic payouts & cross-chain architecture
+- **[Testing Guide](docs/testing.md)** - Verification & testing procedures
+- **[Judge Flow](JUDGE_FLOW.md)** - 60-second evaluation path
+
+### Development
+- **[Setup Guide](docs/setup.md)** - Local development environment
+- **[Architecture](docs/architecture.md)** - System design overview  
 - **[API Reference](docs/runbook.md)** - Commands and scripts
+- **[Actions Guide](docs/actions.md)** - Available operations
+
+### Deployment
+- **[Testnet Addresses](TESTNET_ADDRESSES.md)** - Live contract addresses
+- **[Deployment Checklist](DEPLOYMENT_CHECKLIST.md)** - Production readiness
+- **[Wallet Troubleshooting](WALLET_TROUBLESHOOTING.md)** - Common issues
 
 ## 🏆 Sponsor Fit
 
-### Flow
-- **Core integration**: Cadence contracts, FCL, MetadataViews
-- **Flow Actions**: Real split payout implementation
-- **Best practices**: Resource-oriented programming, capability security
-- **Innovation**: AI-assisted Flow development, weak guarantees pattern
+### Flow 🏆
+- **Production Deployment**: Live testnet at `0x035662afa58bdc22` with 5 contracts
+- **Cadence 1.0**: Latest standard with resource-oriented programming
+- **Flow Actions**: Atomic multi-recipient payouts with weak guarantees
+- **FCL Integration**: Native wallet connection and transaction handling
+- **MetadataViews**: Standard-compliant on-chain metadata storage
+- **Security**: Entitlements, capabilities, and resource safety
+- **Innovation**: AI-assisted pool creation + blockchain execution
 
 ### Circle (Roadmap)
 - **CCTP integration** planned for cross-chain treasury management

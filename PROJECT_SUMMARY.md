@@ -60,10 +60,12 @@ First PWA for Flow blockchain with:
 - **Mobile Optimization**: Touch targets, responsive design
 
 ### Blockchain Integration
-- **FCL (Flow Client Library)**: Wallet connection and transactions
-- **Real Transactions**: No mocks on critical path
-- **Metadata Storage**: On-chain with image hash verification
-- **Cross-Network Ready**: Architecture supports testnet/mainnet
+- **Production Testnet**: Live deployment at `0x035662afa58bdc22`
+- **Cadence 1.0**: Latest standard with 5 deployed contracts
+- **Flow Actions**: Atomic multi-recipient payouts
+- **FCL Integration**: Native wallet connection and transactions
+- **MetadataViews**: Standard-compliant on-chain metadata
+- **Real Operations**: Live blockchain, real USDC, real transactions
 
 ## 📊 Metrics & Impact
 
