@@ -3,7 +3,7 @@
 import type { ReactNode } from 'react'
 import type { NetworkType } from '../flow/config'
 import * as fcl from '@onflow/fcl'
-import { createContext, use, useEffect, useState } from 'react'
+import { createContext, useContext, useEffect, useState } from 'react'
 import { initializeFlowConfig, NETWORK_CONFIGS } from '../flow/config'
 
 // Re-export NetworkType for convenience
@@ -101,19 +101,26 @@ export function NetworkProvider({ children }: { children: ReactNode }) {
       console.log('🚀 Calling fcl.authenticate()...')
       await fcl.authenticate()
       console.log('✅ Authentication successful')
+      
+      // Return success
+      return true
     } catch (error) {
       console.error('❌ Authentication failed:', error)
       
       // Provide user-friendly error message
       const errorMessage = error instanceof Error ? error.message : String(error)
-      if (errorMessage?.includes('User rejected')) {
+      if (errorMessage?.includes('User rejected') || errorMessage?.includes('cancelled')) {
         console.log('ℹ️ User cancelled wallet connection')
+        // Don't show alert for user cancellation
       } else if (errorMessage?.includes('locked')) {
         alert('Please unlock your Flow wallet and try again')
       } else {
         console.error('Full error details:', error)
         alert('Wallet connection failed. Please try switching to local network or check your wallet. Check browser console for details.')
       }
+      
+      // Re-throw error so caller can handle it
+      throw error
     }
   }
 
@@ -145,7 +152,7 @@ export function NetworkProvider({ children }: { children: ReactNode }) {
 }
 
 export function useNetwork() {
-  const context = use(NetworkContext)
+  const context = useContext(NetworkContext)
   if (context === undefined) {
     throw new Error('useNetwork must be used within a NetworkProvider')
   }

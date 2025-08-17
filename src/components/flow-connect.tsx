@@ -60,7 +60,7 @@ export default function FlowConnect() {
                 <div className="text-base text-white/80">
                   <span className="text-white/60">Account: </span>
                   <code className="rounded-lg bg-white/10 px-3 py-2 text-sm sm:text-base font-mono">
-                    {user.addr?.slice(0, 8)}...{user.addr?.slice(-6)}
+                    {user?.addr ? `${user.addr.slice(0, 8)}...${user.addr.slice(-6)}` : 'Loading...'}
                   </code>
                 </div>
               </div>
@@ -74,7 +74,13 @@ export default function FlowConnect() {
           </div>
         ) : (
           <button
-            onClick={authenticate}
+            onClick={async () => {
+              try {
+                await authenticate()
+              } catch (error) {
+                console.error('Authentication error:', error)
+              }
+            }}
             className="w-full rounded-xl bg-gradient-to-r from-blue-500 to-blue-600 px-6 py-4 text-base sm:text-lg font-semibold text-white hover:from-blue-600 hover:to-blue-700 transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] min-h-[56px] shadow-lg"
           >
             🔗 Connect Wallet

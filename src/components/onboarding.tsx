@@ -70,12 +70,26 @@ export default function Onboarding() {
     setShowRoleSelection(true)
   }
 
-  const handleRoleSelect = (selectedRole: UserRole) => {
-    setRole(selectedRole)
-    if (!isAuthenticated) {
-      authenticate()
+  const handleRoleSelect = async (selectedRole: UserRole) => {
+    try {
+      setRole(selectedRole)
+      
+      // If not authenticated, authenticate first before completing onboarding
+      if (!isAuthenticated) {
+        console.log('🔐 Authenticating user during role selection...')
+        await authenticate()
+        // Wait a bit for authentication to settle
+        await new Promise(resolve => setTimeout(resolve, 500))
+      }
+      
+      // Complete onboarding after authentication
+      completeOnboarding()
+      console.log('✅ Onboarding completed successfully')
+    } catch (error) {
+      console.error('❌ Error during role selection and authentication:', error)
+      // Don't complete onboarding if authentication failed
+      alert('Authentication failed. Please try again.')
     }
-    completeOnboarding()
   }
 
   const slideVariants = {
