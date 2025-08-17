@@ -1,5 +1,5 @@
 import { config } from '@onflow/fcl'
-import flowJSON from '../../../flow.json'
+import flowJSON from '../../../config/flow/flow.json'
 
 export type NetworkType = 'local' | 'testnet' | 'mainnet'
 
