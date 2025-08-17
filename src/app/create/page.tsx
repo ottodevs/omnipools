@@ -8,6 +8,7 @@ import { DEMO_ORG_ADDRESS } from '@/lib/constants/vault'
 import { useNetwork } from '@/lib/contexts/network-context'
 import { processImageFile, validateImageFile, ImageMetadata } from '@/lib/utils/image-utils'
 import { createVaultTransaction, waitForTransaction } from '@/lib/flow/transactions'
+import FernCurrencyConverter from '@/components/fern-currency-converter'
 import { motion } from 'framer-motion'
 
 interface Recipe {
@@ -418,6 +419,25 @@ export default function CreatePage() {
                     </div>
                   </div>
                 </div>
+
+                {/* Fern Currency Conversion for Pool Funding */}
+                {recipe.widgets.includes('kycFern') && (
+                  <div className="space-y-4">
+                    <h4 className="text-lg font-semibold text-white">Fund Your Pool</h4>
+                    <p className="text-white/70 text-sm">
+                      Convert fiat currency to USDC to fund your pool using Fern's secure payment infrastructure.
+                    </p>
+                    <FernCurrencyConverter
+                      defaultSourceCurrency="USD"
+                      defaultDestinationCurrency="USDC"
+                      defaultAmount={recipe.targetAmount?.toString() || ''}
+                      onConversionComplete={(transaction) => {
+                        console.log('Pool funding conversion completed:', transaction)
+                        // Could trigger automatic vault funding here
+                      }}
+                    />
+                  </div>
+                )}
 
                 {/* Transaction status */}
                 {transactionId && (

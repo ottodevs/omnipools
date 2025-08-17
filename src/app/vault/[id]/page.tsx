@@ -10,6 +10,9 @@ import RolePanels from '@/components/role-panels'
 import WinnerManager from '@/components/winner-manager'
 import ReceiverLinker from '@/components/receiver-linker'
 import PayoutExecutor from '@/components/payout-executor'
+import FernCurrencyConverter from '@/components/fern-currency-converter'
+import FernWalletManager from '@/components/fern-wallet-manager'
+import FernPayoutConverter from '@/components/fern-payout-converter'
 import { useRole } from '@/lib/contexts/role-context'
 import { useVaultData } from '@/hooks/use-vault-data'
 import { CADENCE_TRANSACTIONS, DEMO_ORG_ADDRESS } from '@/lib/constants/vault'
@@ -401,13 +404,40 @@ export default function VaultPage() {
                 onWinnersUpdated={handleWinnersUpdated}
               />
               
-              {winners.length > 0 && (
-                <PayoutExecutor
-                  vaultId={parseInt(id as string)}
-                  orgAddress={displayData?.org || DEMO_ORG_ADDRESS}
-                  winners={winners}
-                  onPayoutComplete={handlePayoutComplete}
+              {/* Fern Currency Conversion for Pool Funding */}
+              <div className="grid gap-6 lg:grid-cols-2">
+                <FernCurrencyConverter
+                  defaultSourceCurrency="USD"
+                  defaultDestinationCurrency="USDC"
+                  onConversionComplete={(transaction) => {
+                    console.log('Funding conversion completed:', transaction)
+                    // Refresh vault data after funding
+                    setTimeout(refresh, 2000)
+                  }}
                 />
+                <FernWalletManager 
+                  onWalletSelect={(wallet) => console.log('Selected wallet:', wallet)}
+                />
+              </div>
+              
+              {winners.length > 0 && (
+                <>
+                  <PayoutExecutor
+                    vaultId={parseInt(id as string)}
+                    orgAddress={displayData?.org || DEMO_ORG_ADDRESS}
+                    winners={winners}
+                    onPayoutComplete={handlePayoutComplete}
+                  />
+                  
+                  {/* Fern Fiat Payout Conversion */}
+                  <FernPayoutConverter
+                    winners={winners}
+                    onPayoutConversion={(conversions) => {
+                      console.log('Fiat payout conversions:', conversions)
+                      // Could integrate with Flow Actions to handle fiat payouts
+                    }}
+                  />
+                </>
               )}
             </div>
           )}

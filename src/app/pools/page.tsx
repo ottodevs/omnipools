@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { motion, AnimatePresence } from 'framer-motion'
 import Card from '@/components/Card'
 import FlowConnect from '@/components/flow-connect'
+import FernDemo from '@/components/fern-demo'
 import { useRole } from '@/lib/contexts/role-context'
 
 interface Vault {
@@ -295,6 +296,15 @@ export default function PoolsPage() {
               </div>
             </div>
           </div>
+        </motion.div>
+
+        {/* Fern Integration Demo */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.4 }}
+        >
+          <FernDemo />
         </motion.div>
       </div>
     </main>
