@@ -4,6 +4,10 @@
 
 ![OmniPools](public/sticker.png)
 
+## 📋 Presentation Slides
+
+**[View Project Slides](https://give-squid-01274537.figma.site/)** - Complete project overview and demo
+
 ## Features
 
 - **🤖 AI-Powered Pool Creation** - Natural language → Smart pool configurations
