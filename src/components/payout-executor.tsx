@@ -85,13 +85,14 @@ export default function PayoutExecutor({
           }
           
           setResult(simulatedResult)
-        onPayoutComplete(
-          simulatedResult.operationId,
-          simulatedResult.totalPaid,
-          simulatedResult.misses
-        )
-      } else {
-        throw new Error('Transaction failed')
+          onPayoutComplete(
+            simulatedResult.operationId,
+            simulatedResult.totalPaid,
+            simulatedResult.misses
+          )
+        } else {
+          throw new Error('Transaction failed')
+        }
       }
     } catch (error) {
       console.error('Error executing payout:', error)

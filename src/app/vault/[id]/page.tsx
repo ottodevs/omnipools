@@ -9,6 +9,7 @@ import ReceiverLinker from '@/components/receiver-linker'
 import RolePanels from '@/components/role-panels'
 import RoleSelector from '@/components/role-selector'
 import TransactionExecutor from '@/components/transaction-executor'
+import VaultFundingDialog from '@/components/vault-funding-dialog'
 import WinnerManager from '@/components/winner-manager'
 
 import { useVaultData } from '@/hooks/use-vault-data'
@@ -414,12 +415,16 @@ export default function VaultPage() {
               {/* Fund Vault Button */}
               <Card title="Fund Vault">
                 <div className="space-y-4">
-                  <p className="text-white/70 text-sm">
+                  <p className="text-sm text-white/70">
                     Add funds to this vault using fiat currency or USDC. Fern handles automatic conversion and bridging.
                   </p>
                   <button
                     onClick={() => setShowFundingDialog(true)}
-                    className="w-full bg-gradient-to-r from-blue-500 to-blue-600 text-white px-4 py-3 rounded-lg hover:from-blue-600 hover:to-blue-700 font-medium transition-all"
+                    className={`
+                      w-full rounded-lg bg-gradient-to-r from-blue-500 to-blue-600 px-4 py-3 font-medium text-white
+                      transition-all
+                      hover:from-blue-600 hover:to-blue-700
+                    `}
                   >
                     <span className="flex items-center justify-center gap-2">
                       <span className="text-xl">💰</span>
