@@ -1,6 +1,6 @@
 {
-  "name": "TrustFlow - OmniPools",
-  "short_name": "TrustFlow",
+  "name": "OmniPools",
+  "short_name": "OmniPools",
   "description": "Chain-abstracted payouts for events. Atomic, audit-ready.",
   "start_url": "/",
   "display": "standalone",

@@ -1,5 +1,5 @@
 {
-  "name": "omnipools-app",
+  "name": "omnipools",
   "type": "module",
   "private": true,
   "packageManager": "bun@1.2.20",
@@ -34,11 +34,11 @@
     "setup": "make setup",
     "test": "make test",
     "typecheck": "tsc --noEmit",
-    "hackathon": "make hackathon",
+
     "unused": "knip",
     "docs": "echo '📚 Documentation available in ./docs/'",
     "snapshot-ui": "./scripts/refresh-ui.sh",
-    "judge": "concurrently -k -n EMU,APP -c cyan,magenta \"flow emulator start --verbose\" \"sh -c 'sleep 3 && ./scripts/demo.sh && bun run snapshot-ui && bun run dev'\"",
+    "demo": "concurrently -k -n EMU,APP -c cyan,magenta \"flow emulator start --verbose\" \"sh -c 'sleep 3 && ./scripts/demo.sh && bun run snapshot-ui && bun run dev'\"",
     "reset-run": "./scripts/reset-and-run.sh"
   },
   "dependencies": {

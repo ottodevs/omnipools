@@ -1,11 +1,11 @@
-// TrustFlow PWA Service Worker
-const CACHE_NAME = 'trustflow-v1';
+// OmniPools PWA Service Worker
+const CACHE_NAME = 'omnipools-v1';
 const urlsToCache = [
   '/',
   '/create',
   '/pools',
-  '/assets/omnipools_banner_inline.png',
-  '/assets/logo-square.svg',
+  '/sticker.png',
+
   '/favicon.ico'
 ];
 
