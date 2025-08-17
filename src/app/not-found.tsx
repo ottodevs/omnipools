@@ -17,10 +17,10 @@ export default function NotFound() {
             Home
           </Link>
           <Link 
-            href="/vault/1" 
+            href="/pools" 
             className="rounded-xl bg-white/10 px-4 py-2 hover:bg-white/20 text-white transition-colors"
           >
-            Demo Vault
+            Pools
           </Link>
         </div>
       </div>
