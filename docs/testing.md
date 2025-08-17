@@ -397,6 +397,96 @@ export async function createVaultOnChain(metadata: VaultMetadata) {
 - **Success Rate**: 100% on testnet
 - **Throughput**: Limited by block time (~1-2 seconds)
 
+## 🚀 Testnet Demo Scripts
+
+### Available Demo Scripts
+
+#### 1. Individual Commands
+```bash
+./scripts/testnet-commands.sh
+```
+Shows all commands for step-by-step execution.
+
+#### 2. Automated Simple Script
+```bash
+./scripts/testnet-transaction-tracker.sh
+```
+Executes complete flow and captures IDs automatically.
+
+#### 3. Complete Analysis Script
+```bash
+./scripts/testnet-demo-with-flowscan.sh
+```
+Complete flow with verifications and detailed logging.
+
+### Example Commands for Live Demos
+
+#### Add More Participants
+```bash
+flow transactions send ./cadence/transactions/tx_add_participant.cdc \
+  --network testnet --signer deployer \
+  0x035662afa58bdc22 1 0x035662afa58bdc22 '{"team":"TeamAlpha"}'
+```
+
+#### Setup USDC and Payout
+```bash
+# Setup USDC receiver
+flow transactions send ./cadence/transactions/tx_link_usdc_receiver.cdc \
+  --network testnet --signer deployer
+
+# Mint USDC
+flow transactions send ./cadence/transactions/tx_mint_or_fund_usdc.cdc \
+  --network testnet --signer deployer \
+  0x035662afa58bdc22 5000.00
+
+# Set winners and execute payout
+flow transactions send ./cadence/transactions/tx_set_winners_simple.cdc \
+  --network testnet --signer deployer \
+  0x035662afa58bdc22 1 1 3000.00 2 2000.00
+```
+
+#### Query Current State
+```bash
+# Vault summary
+flow scripts execute ./cadence/scripts/sc_get_summary.cdc \
+  --network testnet 0x035662afa58bdc22 1
+
+# Participants
+flow scripts execute ./cadence/scripts/sc_get_participants.cdc \
+  --network testnet 0x035662afa58bdc22 1
+```
+
+### Demo Workflow
+
+1. **Execute command**: 
+   ```bash
+   flow transactions send ./cadence/transactions/[TRANSACTION].cdc --network testnet --signer deployer [ARGS]
+   ```
+
+2. **Capture Transaction ID** from output:
+   ```
+   Transaction ID: [TX_ID]
+   ```
+
+3. **Show in FlowScan**:
+   ```
+   https://testnet.flowscan.io/tx/[TX_ID]
+   ```
+
+4. **View account activity**:
+   ```
+   https://testnet.flowscan.org/account/0x035662afa58bdc22
+   ```
+
+### Current Vault Status
+
+The vault is configured and ready for demos:
+- ✅ Vault created (ID: 1)
+- ✅ Contracts deployed
+- ✅ One participant added (TeamDemo)
+- ⏳ Ready for more participants
+- ⏳ Ready for winners and payouts
+
 ---
 
 **Status**: 🟢 All Tests Passing  

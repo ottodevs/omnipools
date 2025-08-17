@@ -24,6 +24,19 @@ All contracts successfully deployed to Flow testnet:
 | **DeFiActions** | `0x035662afa58bdc22` | ✅ Live | Flow Actions integration | [View](https://testnet.flowscan.io/contract/A.035662afa58bdc22.DeFiActions) |
 | **FungibleTokenConnectors** | `0x035662afa58bdc22` | ✅ Live | Token bridging utilities | [View](https://testnet.flowscan.io/contract/A.035662afa58bdc22.FungibleTokenConnectors) |
 
+### Live Demo Transaction
+**Example Transaction**: `4eca8454117fa8cab85082a7682eaa4fa44d3e8c92b1eccf77581698963103de`
+- **FlowScan**: https://testnet.flowscan.io/tx/4eca8454117fa8cab85082a7682eaa4fa44d3e8c92b1eccf77581698963103de
+- **Action**: Added participant "TeamDemo" to vault
+- **Event**: `A.035662afa58bdc22.Vaults.ParticipantAdded`
+- **Status**: ✅ SEALED (confirmed)
+
+### Organization Account
+- **Address**: `0x035662afa58bdc22`
+- **FlowScan**: https://testnet.flowscan.org/account/0x035662afa58bdc22
+- **Balance**: 100,000 FLOW
+- **Deployed Contracts**: 5
+
 ### Standard Flow Contracts
 
 | Contract | Testnet Address | Purpose |

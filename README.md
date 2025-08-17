@@ -70,6 +70,23 @@ All contracts deployed on Flow Testnet at `0x035662afa58bdc22`:
 
 See [Flow Integration Guide](docs/flow-integration.md) for detailed implementation.
 
+## Live Testnet Demo
+
+**Try it now**: The app is live on Flow Testnet with real transactions:
+
+- **Demo Vault**: Vault ID 1 on testnet account `0x035662afa58bdc22`
+- **FlowScan**: https://testnet.flowscan.org/account/0x035662afa58bdc22
+- **Example Transaction**: https://testnet.flowscan.io/tx/4eca8454117fa8cab85082a7682eaa4fa44d3e8c92b1eccf77581698963103de
+
+### Quick Demo Scripts
+```bash
+# View current vault status
+flow scripts execute ./cadence/scripts/sc_get_summary.cdc --network testnet 0x035662afa58bdc22 1
+
+# Run automated demo
+./scripts/testnet-transaction-tracker.sh
+```
+
 ## Fern Integration
 
 Seamless fiat-to-crypto conversion enabling:
